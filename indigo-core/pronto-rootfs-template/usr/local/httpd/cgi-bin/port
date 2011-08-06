@@ -1,0 +1,81 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!-- Copyright 2011 Big Switch Networks -->
+
+<% 
+   require "web_common"
+   require "ui_cs_op"
+   require "ui_utils"
+%>
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <% print(common_includes) %>
+	<script type="text/javascript">
+	  $(document).ready(function(){
+        $('#port_tab').dataTable({"bJQueryUI": true});
+        $('#port_form').ajaxForm({target: '#port_content'});
+	  });
+	</script>
+</head>
+
+<body>
+<div id="port_content">
+
+<form name="input" action="/cgi-bin/port" method="GET" id="port_form">
+<br>
+<input type="submit" value="Refresh Table" /></td>
+<br>
+</form>
+<%
+
+   local port_count = get_port_count()
+
+   -- TODO Add fields to select one port and change its settings
+   if port_count >= 0 then
+      table_start('<table id="port_tab">', '<tr>',
+                 "Port|Enabled|Link|Speed|Autoneg|MTU|RX Pause|TX Pause|Duplex")
+
+      -- Iterate over ports and report info
+      for i=1,port_count do
+         status,result,err_str = cs_port_get(i)
+         if status ~= CS_REST_OKAY then
+            print("<tr><td colspan='8'>Error getting information for port "
+                  .. tostring(i) .. "</td></tr>\n")
+         else
+            local port_info = result[1]
+            en = two_choice(port_info.enable, "no", "yes")
+            link = two_choice(port_info.link, "down", "up")
+            duplex = two_choice(port_info.duplex, "half", "full")
+            print("<tr>")
+            if link ~= "up" then
+               duplex = "-"
+            end
+            printf("<td>%d</td>", i)
+            printf("<td>%s</td><td>%s</td><td>%s</td><td>%s</td>" ..
+                   "<td>%s</td><td>%s</td><td>%s</td><td>%s</td></tr>\n",
+                   en,
+                   link,
+                   tostring(port_info.speed),
+                   en_dis(port_info.autoneg),
+                   tostring(port_info.mtu),
+                   en_dis(port_info["rx_pause"]),
+                   en_dis(port_info["tx_pause"]),
+                   duplex)
+         end
+      end
+   else
+      print("No ports found")
+   end
+%>
+
+</tbody>
+</table>
+</div>
+</body>
+</html>
+

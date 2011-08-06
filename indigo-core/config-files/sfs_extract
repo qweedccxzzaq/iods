@@ -1,0 +1,21 @@
+#!/bin/sh
+#
+# Extract an sfs compressed file system
+#
+
+if test -z "$1"; then
+    sfs_parent=/
+else
+    sfs_parent=$1
+    mkdir -p $sfs_parent
+fi
+
+cd $sfs_parent
+mkdir -p sfs
+sfsctl extract --target=sfs
+
+if test -e $sfs_parent/sfs/sfs.tgz; then
+    tar xzf $sfs_parent/sfs/sfs.tgz
+    rm $sfs_parent/sfs/sfs.tgz
+    echo "Extracted sfs to $sfs_parent/sfs"
+fi

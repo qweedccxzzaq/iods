@@ -1,0 +1,112 @@
+SFS Version 1
+
+Overview
+
+    This is a very simple file system implementation to support saving
+    configuration files into flash.  
+
+WARNING
+
+    Misuse of this utility can corrupt your flash and make the system
+    unusable. 
+
+Quick Start
+
+    This is updated for the release indigo-beta-4.  The main SFS
+    directory has changed from /sfs to /config/<switch-addr>/sfs
+
+    Most users should be able to use SFS in the following way.  Below,
+    SFS_DIR refers to /config/<switch-addr>/sfs (which was /sfs in
+    previous releases.
+
+    1.  After bootup, create the directory SFS_DIR if it is not present.
+
+    2.  The normal init sequence starts with /etc/rc.sh which calls
+        /etc/system_init which calls /etc/system_config.  For more
+        details see README-config or the wiki page at:
+
+        http://www.openflowswitch.org/wk/index.php/IndigoConfiguration
+
+        If versions of these files are found in the SFS directory they
+        are executed instead of those in /etc.
+
+    3.  Ensure the files from (2) are placed in the SFS_DIR directory on
+        the target and that they will run properly from this location.
+
+    4.  Change to the parent directory of SFS_DIR and execute the shell 
+        script sfs_create on the target (which is located in /sbin).  
+        This will store the files in flash.  On reboot, they will be
+        restored by rc.sh into SFS_DIR.
+
+Current Limitations of SFS
+
+    1.  Max of 256 KB for entire file system with overhead of about 2
+        KB. 
+    2.  64 files max.
+    3.  Filenames at most 31 characters long.
+
+    (2) and (3) do not apply to files run through the sfs_create
+    and sfs_extract scripts (as they use tar to create an archive
+    of the files).
+
+Usage of sfsctl
+
+    sfsctl is the control program.  'sfsctl help' will give the usage.
+    Commands are 
+
+        create    Create a flash SFS from existing files
+        extract   Extract from flash an SFS
+        check     Verify the contents of an SFS
+        search    Search flash at reasonable offsets for an SFS
+        test      Create a RAM SFS from files and copy back to target 
+        ftest     Like test, but commit to flash in between
+
+    The base address of the file system can be specified with the
+    --base=<addr> option.  WARNING:  Using an incorrect address
+    for the create or test commands can corrupt the flash on the
+    system and make it unusable.  For the LB4G, it is recommended that 
+    you only use the default settings of 0x80000 offset and 256KB size.
+
+    Normal usage is to extract the SFS from flash into a directory on
+    boot.  If changes are made to the files in that directory, the SFS
+    must be manually saved (sfs create) back to flash.
+
+    --verb may be given for any command to get verbose output.
+
+Example
+
+    In /etc/rc.sh, you will likely find a command like:
+
+        sfsctl extract
+        test -x /sfs/system_config && source /sfs/system_config
+
+    This should report successful extraction of the file system and
+    execution of the extra_config file.
+
+    If you need to change the configuration of your system, for
+    example the system's IP address, edit the file extra_config as
+    appropriate and the execute the commands:
+
+        cd /sfs
+        sfsctl create *
+
+    This should report the successful creation of an SFS in flash.
+    You can check the file system with
+
+        sfsctl check
+
+Notes and Warnings
+
+    Again WARNING:  Misuse of this can render your system inoperable.
+
+    No spaces may appear around = for options.
+
+    Sorry, but all the file names must be listed on the command line
+    when creating a file system.  If the directory appears in the
+    name, it will be recorded in the FS.  On extraction, the directory
+    structure must already exist or the FS will not extract properly.
+
+    The current implementation checks that the base address used when
+    writing to flash is between 8 and 16 MB which appears to be safe
+    from the Quanta memory map.  You can override this by specifying
+    --override on the command line.

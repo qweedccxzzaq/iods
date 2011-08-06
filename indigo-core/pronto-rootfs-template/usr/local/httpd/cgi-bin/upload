@@ -1,0 +1,99 @@
+#!/usr/local/bin/haserl --shell=lua -u 20000 -U /cf_card/tmp
+Content-type: text/html
+
+<!-- Copyright 2011 Big Switch Networks -->
+
+<% 
+   require "web_common"
+   require "ui_cs_op"
+   require "ui_utils"
+%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <% print(common_includes) %>
+	<script type="text/javascript">
+	  $(document).ready(function(){
+        $('#upload_form').ajaxForm({target: '#upload_content'});
+	  });
+	</script>
+</head>
+
+<body>
+<div id="upload_content">
+
+<p>On this page you can upload new firmware to the switch using
+your web browser or TFTP.  The target file will be stored on the
+CF card or Flash.
+<p>
+Select the target for the upload, either a new Linux kernel (uImage) or a
+new root file system (uInitrd2m).  Then select the source file, either 
+using your browser or TFTP. 
+<p>
+If you use TFTP and do not specify a file name, the default name will be used: 
+uInitrd2m for the root file system or uImage for a Linux kernel.
+<p>
+<b>NOTE:  This page will refresh when the upload is complete</b>
+<form method='POST' enctype='multipart/form-data' action='/cgi-bin/upload2' id="upload_form">
+<hr>
+<table>
+<tr>
+<td>Target</td>
+<td> </td>
+</tr>
+<tr>
+<td> </td>
+<td><input type="radio" name="dest" value="uInitrd2m" checked />
+Root File System (uInitrd2m)
+</td>
+</tr>
+<tr>
+<td> </td>
+<td>
+<input type="radio" name="dest" value="uImage" /> 
+Linux Kernel (uImage)</td>
+</tr>
+</table>
+<hr>
+<table>
+<tr>
+<td> Source </td>
+<td> </td>
+<td> </td>
+<td> </td>
+<tr>
+<td> </td>
+<td> <input type="radio" name="up_mode" value="http" /> Use Browser </td>
+<td> </td>
+<td> </td>
+</tr>
+<tr>
+<td> </td>
+<td> </td>
+<td> File to upload:<br><input type="file" name="upfile"> </td>
+<td> </td>
+</tr>
+<tr>
+<td> </td>
+<td> <input type="radio" name="up_mode" value="tftp" /> Use TFTP </td>
+<td> </td>
+<td></td>
+</tr>
+<tr>
+<td> </td>
+<td> </td>
+<td><br>TFTP IP address:<br><input type="input" name="tftp_ip"> </td>
+<td>
+<b>Optional:</b><br>Source file name on TFTP server<br>
+<input type="input" name="tftp_src"><br>
+</td>
+</tr>
+</table>
+<hr>
+<input type=submit value=Press> to upload the file
+</form>
+
+</body>
+</html>

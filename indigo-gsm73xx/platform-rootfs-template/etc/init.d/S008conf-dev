@@ -1,0 +1,29 @@
+#!/bin/sh
+
+PATH=/bin:/sbin
+
+config_dev_no=$(cat /proc/mtd | grep "config"   \
+                | awk -F ":" '{printf $1}'      \
+		| awk -F "d" '{printf $2}')
+
+## prepare the customer config store device.
+CONFIG_CONFIG_DEV_CHAR="/dev/mtd$config_dev_no"
+CONFIG_CONFIG_DEV_BLOK="/dev/mtdblock$config_dev_no"
+
+
+if mount -t jffs2 $CONFIG_CONFIG_DEV_BLOK /config; then
+
+	if [ -e /config/.ready ]; then
+echo "[SUCCESS ] Found config-store"
+exit 1
+	else
+umount /config
+	fi
+fi
+
+
+echo "[WARNNING] The config-store is not existed, try to reinit it !!"
+flash_eraseall -j $CONFIG_CONFIG_DEV_CHAR
+mount -t jffs2 $CONFIG_CONFIG_DEV_BLOK /config
+touch /config/.ready
+

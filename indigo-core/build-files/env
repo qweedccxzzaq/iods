@@ -1,0 +1,22 @@
+#
+# Defines for Broadcom based switch builds, bash file
+#
+# Normally, this file is sourced from from indigo-core
+
+#echo "ERROR: Edit build-files/env(.tcsh) and comment out this line" && exit 1
+export TOOLS_DIR=$HOME/tools
+export NETGEAR_TOP=${TOOLS_DIR}/iods-ntgr-bld
+
+# TOP_LEVEL_DIR is where core, platform, ui etc are found
+export TOP_LEVEL_DIR=`pwd`/..
+# CORE_DIR is normally indigo-core
+export CORE_DIR=`pwd`
+
+if ! test -d ${CORE_DIR}/config-files; then
+   echo "TOP_LEVEL_DIR: $TOP_LEVEL_DIR"
+   echo "CORE_DIR: $CORE_DIR"
+   echo "TOOLS_DIR: TOOLS_DIR"
+   echo "CORE_DIR does not appear to be properly defined"
+   echo "CORE should be the root directory containing openflow"
+   exit 2
+fi

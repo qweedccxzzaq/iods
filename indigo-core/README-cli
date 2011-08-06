@@ -1,0 +1,116 @@
+CLI Quickstart Document
+
+The Switch CLI provides access to the hardware driver and configuration 
+data of the switch.  The interface provides a Cisco-like CLI with help
+and tab completion.  At any given point, the CLI has a "context" which
+determines what commands may be given.  The context is indicated in
+the prompt.
+
+In general, parameters are accumulated prior to being committed to
+the system with a specific command.  For example:
+
+SwitchCLI# port 17             # Enter the port mode for OpenFlow port 17
+SwitchCLI-port(17)# speed=10   # Indicate the speed
+SwitchCLI-port(17)# enable=1   # Indicate the port should be enabled
+SwitchCLI-port(17)# set        # Commit the change to the switch
+SwitchCLI#
+
+You can see the status of the CLI (including the current values of
+parameters to be committed) with the clistat command at any time.
+
+Some limited editing commands are available including 
+
+  left-arrow   Move left one character
+  right-arrow  Move right one character
+  control-a    Start of line
+  control-u    Erase line
+  control-k    Erase to end of line
+  control-d    Exit the current context
+  up-arrow     Move back in command history
+  down-arrow   Move forward in command history
+
+Other notes:
+
+You can get help at any time with the "help" command.
+"help params" shows the parameter meaning for each keyword as well
+Tab completion available by hitting the tab button at any time.
+CLI debug logging is to the console and can be turned on or off.
+
+Here is a summary of commands.
+
+Commands common to all contexts:
+  clistat     : Display the status of the CLI
+  debug       : Set or get the debug level
+  #           : Comment rest of line
+  flowdisp    : Set the display mode for flow table entries
+  help        : Display help
+  cxn_history : Display the controller connection history
+  version     : Display the firmware version
+  quit/exit   : Exit the current context
+
+Commands for the fundamental context:
+  flowtable   : Show the flowtable
+  enable      : Enter the enable mode
+  match       : Define a flow match object
+  echo        : Call the server with an echo request of line
+  port        : Set or get port (interface) state
+  config      : Configure basic switch parameters
+  status      : Display the status of the switch
+  flowentry   : Show flow entries satisfying a given match
+  show        : Show various status
+  interface   : Set or get interface (port) state
+
+Commands for the port context:
+  show        : Show port status
+  stats       : Show port statistics
+  name        : Set the interface name of the port
+  mtu         : Set the port max packet length
+  speed       : Set port speed
+  autoneg     : Enable/disable autonegotiation
+  set         : Commit the settings given
+  enable      : Set the port enable state; no argument enables
+
+Once a "name" has been set for a port, the interface command may
+be used to reference the port.
+
+Commands for the config context:
+  show            : Show the running or saved configuration
+  save            : Save the cunrent configuration state
+  revert          : Revert configuration to saved configuration
+  apply           : Not implemented
+  controller_ip   : Set the controller IP address
+  controller_port : Set the TCP port used for controller communication
+  switch_ip       : Set the IP address of the switch
+  netmask         : Set the netmask for the switch IP address
+  gateway         : Set the IP address of the gateway for the switch interface
+  enable_telnet   : Enable and direct the telnet server (CLI or shell)
+  datapath_id     : Set the datapath ID used by OpenFlow
+  fail_mode       : Set the behavior (open or closed) on controller cxn fail
+  log_level       : Set the log level
+
+Note:  No warning is given if you exit the config context with unsaved
+changes.
+
+Various aliases for configuration variables are supported.
+
+Commands for the show context:
+   port       : Show port information
+   interface  : Same as port, but use an interface name to specify
+   flowtable  : Show the entire flowtable
+   config     : Show the current configuration
+
+Known Issues
+
+1.  The "apply" configuration command is not implemented.  A reboot is
+needed to apply the new configuration.
+
+2.  The telnet operation is only on or off; the ability to direct telnet
+to the CLI or shell is not supported.
+
+3.  Logging is not supported to a file, although the debug level can
+be changed with the debug command (on or off).
+
+4.  Port configuration is not persistent across reboots.
+
+5.  The "enable" command does nothing (there is no non-enabled mode).
+

@@ -1,0 +1,17 @@
+***************
+*** 588,594 ****
+  
+  config MTD_GSM73XX_LOADER
+  	tristate "GSM73XX board loader flash map"
+- 	depends on MTD_CFI && MPC85xx_DS
+  	help
+  	   This enable access routines for the flash chips on gsm73xx
+  	   boards.Ifyou have one of these boards and would like to use
+--- 588,594 ----
+  
+  config MTD_GSM73XX_LOADER
+  	tristate "GSM73XX board loader flash map"
++ 	depends on MTD_CFI && GSM73XX
+  	help
+  	   This enable access routines for the flash chips on gsm73xx
+  	   boards.Ifyou have one of these boards and would like to use

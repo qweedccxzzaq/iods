@@ -1,0 +1,18 @@
+# This is run first except when booting in single-user mode.
+::sysinit:/etc/rc.sh
+
+# /bin/sh invocations on selected ttys
+#
+# Start an "askfirst" shell on /dev/ttyS1
+#ttyS1::askfirst:-/bin/sh
+
+#
+# Start internet super daemon; do NOT background!
+#::respawn:/usr/sbin/xinetd -stayalive -reuse -pidfile /tmp/xinetd.pid
+
+# Start user application
+#::respawn:/bin/application
+
+# Must be last 'respawn' entry to avoid ^C problem
+# Start a shell on the console
+::respawn:-/bin/sh

@@ -1,0 +1,117 @@
+#!/bin/sh
+#
+# Copyright 2011 Big Switch Networks
+#
+# Default Indigo system initialization file
+#
+# See rc.sh and README-config for more information
+#
+
+# Start with the default defines
+source /etc/find-env
+
+# Copy the system sysenv configuration file to 'running'
+if test -n "$config_dir"; then
+    if test -d $config_dir; then
+        if test -e $config_dir/sysenv; then
+            cp $config_dir/sysenv $config_dir/sysenv.running
+        elif test -e /etc/sysenv; then
+            cp /etc/sysenv $config_dir/sysenv.running
+        fi
+    else
+        echo "WARNING: Configuration dir does not exist"
+    fi
+fi
+
+if test -z "$client_root"; then
+    echo "Error System Config: client_root is required"
+    exit 1
+fi
+
+# Check if updating
+check_update
+
+# Set up log directory
+mkdir -p $log_dir
+
+# Unpack overlay if present and not disabled
+if test "$disable_overlay" != "yes"; then
+    rm -f /tmp/.overlay_done
+    ovlapply
+fi
+
+echo "Installing user-kernel communication drivers"
+insmod /lib/modules/linux-kernel-bde.ko
+insmod /lib/modules/linux-user-bde.ko
+
+if test -n "$hostname"; then
+    hostname $hostname
+else
+    if test -n "$system_ref"; then
+        hostname $system_ref
+    else
+        hostname indigo-unknown
+    fi
+fi
+
+# Start up out-of-band network if enabled
+if test -e /etc/oob-network; then
+    source /etc/oob-network
+fi
+
+# Start up telnet if so directed
+# To do: Direct to CLI or shell
+if test "$disable_telnetd" != "yes" ; then
+    echo "Starting Telnet"
+    telnetd
+fi
+
+# Start up SSH if available
+if test "$disable_sshd" != "yes" ; then
+    if test -x /bin/dropbearkey; then
+        if ! test -e /etc/dropbear/dropbear_rsa_host_key; then
+            echo "Generating RSA key"
+            mkdir -p /etc/dropbear
+            dropbearkey -t rsa -f /etc/dropbear/dropbear_rsa_host_key > \
+                /etc/dropbear/dropbear_rsa_host_key.pub
+        fi
+    fi
+    if test -x /sbin/dropbear; then
+        echo "Starting SSH"
+        /sbin/dropbear
+    else
+        echo "SSH dropbear not found"
+    fi
+fi
+
+# Check if environment "no_sysconf" set from boot args
+if test "$disable_sysconf" == "yes" ; then 
+    echo "disable_sysconf is yes.  Manual configuration required.  Exiting."
+    exit 0
+fi
+
+if test -e $sys_config_file; then
+    echo "System Init:  Running $sys_config_file"
+    source $sys_config_file
+else
+    echo "No system config file found; manual configuration required"
+    echo "End System Init"
+fi
+
+if test -e /etc/inband-network; then
+    source /etc/inband-network
+fi
+
+# Start web server if not disabled
+if test "$disable_httpd" != "yes"; then
+    echo "Starting web server"
+    httpd -h /usr/local/httpd
+fi
+
+if test -e $config_dir/indigo-postinit.sh; then
+    echo "Sourcing $config_dir/indigo-postinit.sh"
+    source $config_dir/indigo-postinit.sh
+fi
+
+echo "Welcome to Indigo"
+[ -e /etc/indigo-version ] && cat /etc/indigo-version

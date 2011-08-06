@@ -1,0 +1,13 @@
+#!/bin/sh
+
+PATH=/bin:/sbin
+
+## telnet daemon
+if [ -x /sbin/telnetd ]; then
+[ ! -d /dev/pts ] && {
+	mkdir -p /dev/pts
+	mount -t devpts none /dev/pts
+}
+#telnetd
+fi
+

@@ -1,0 +1,81 @@
+ERROR THIS SHOULD GO AWAY
+
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!-- Copyright 2011 Big Switch Networks -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Indigo Firmware Update</title>
+
+<%
+   -- Sorry, this one is kind of a mess
+   require("ui_utils")
+   if ENV["REQUEST_METHOD"] == "POST" then
+      
+      -- TODO Check form data
+      cmd_str = "cd /tmp && flashcp mtd0image /dev/mtd0"
+      rv = os.execute(cmd_str)
+      if rv ~= 0 then
+         pagecontent = "<font color='red'><h1>Error reflashing switch</h1></font>"
+      else
+         pagecontent = [[
+<font color='green'><h2>Firmware updated</h2></font>
+<h2><a href="reboot">Proceed to reboot page</a></h2>
+]]
+      end
+      
+   else -- Not posted yet; check md5sum
+      rv = os.execute("md5sum /tmp/mtd0image > /tmp/mtd0image.md5")
+      md5val = read_file("/tmp/mtd0image.md5")
+      if not md5val then
+         pagecontent = [[
+<h1>Could not generate md5sum of /tmp/mtd0image</h1>
+No firmware image found.
+<br>
+<h2>
+<a href="upload">Retry upload</a>
+</h2>
+]]
+      else -- Okay, found file and got md5sum
+         md5val = string.gsub(md5val, ' .*', '')
+         pagecontent = [[
+<h2>Using the image in /tmp/mtd0image with md5sum
+]]
+         pagecontent = pagecontent .. tostring(md5val)
+         pagecontent = pagecontent .. [[
+</h2>
+<h1>Are you sure you want to reflash the switch?</h1>
+<style type=text/css>
+input.red {background-color: #cc0000; font-weight: bold; font-size: 12px; color: white;}
+</style>
+<table cellpadding=10>
+<tr><td>
+<form name="input" action="control" method="GET">
+<input type="submit" value="Not Now" />
+</form>
+</td><td></td></tr>
+<tr><td><form name="input" action="reflash" method="POST">
+<input class="red" type="submit" value="REFLASH SWITCH" />
+</form>
+</td>
+<td><b>This page will reload when the operation is complete.</b></td>
+</tr>
+</table>
+]]
+      end
+   end
+%>
+</head>
+
+<% 
+   require "web_common"
+   print(top_matter)
+%>
+
+<% print(pagecontent) %>
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+## When the device is a new one. (etc, from factory), there won't be
+## any configuration file. As such case, we copy the default config 
+## to startup config. make the application work on specify state.
+[ ! -e /config/startup.conf ] && {
+echo "[WARNING] no startup configuration, use the default configuration!"
+mkdefcfg.sh /config/startup.conf
+}
+

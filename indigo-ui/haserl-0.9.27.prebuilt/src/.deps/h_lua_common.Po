@@ -1,0 +1,145 @@
+h_lua_common.o h_lua_common.o: h_lua_common.c config.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/string.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/features.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_config.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_arch_features.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/cdefs.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/stddef.h \
+  /home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/lua.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/stdarg.h \
+  /home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/luaconf.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/limits.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/syslimits.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/limits.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/posix1_lim.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/local_lim.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/linux/limits.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_local_lim.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/posix2_lim.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/xopen_lim.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/stdio_lim.h \
+  /home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/lauxlib.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/stdio.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/types.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/wordsize.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/kernel_types.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/typesizes.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/pthreadtypes.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sched.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_stdio.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/wchar.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/wchar.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_mutex.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/pthread.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sched.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/time.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/time.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_clk_tck.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/signal.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sigset.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/initspin.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sigthread.h \
+  /home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_pthread.h \
+  /home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/lua.h \
+  /home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/lualib.h \
+  common.h h_lua_common.h h_lua.h h_luac.h h_error.h haserl_lualib.inc
+
+config.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/string.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/features.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_config.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_arch_features.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/cdefs.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/stddef.h:
+
+/home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/lua.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/stdarg.h:
+
+/home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/luaconf.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/limits.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/syslimits.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/limits.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/posix1_lim.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/local_lim.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/linux/limits.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_local_lim.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/posix2_lim.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/xopen_lim.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/stdio_lim.h:
+
+/home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/lauxlib.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/stdio.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/types.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/wordsize.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/kernel_types.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/typesizes.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/pthreadtypes.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sched.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_stdio.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/wchar.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/wchar.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_mutex.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/pthread.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sched.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/time.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/time.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_clk_tck.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/signal.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sigset.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/initspin.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sigthread.h:
+
+/home/dtalayco/tools/iods-ntgr-bld/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_pthread.h:
+
+/home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/lua.h:
+
+/home/dtalayco/work/indigo/indigo-core/tmp-files/rootfs-gsm73xx/include/lualib.h:
+
+common.h:
+
+h_lua_common.h:
+
+h_lua.h:
+
+h_luac.h:
+
+h_error.h:
+
+haserl_lualib.inc:

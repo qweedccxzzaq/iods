@@ -1,0 +1,103 @@
+#
+# Simple rc.soc file for Stanford-LB8 indigo binary release
+#
+
+echo "rc: unit $unit"
+
+
+# Led program for new rev of 5651x SDK and Ref design
+# local ledcode '\
+#  E0 28 60 E3 67 4B 67 87 06 E3 80 D2 18 74 01 28 \
+#  60 E3 67 AF 75 1C 67 C4 67 4B 77 24 32 0E 87 32 \
+#  08 87 67 B6 06 E3 80 D2 1C 74 0F 12 E2 85 05 D2 \
+#  0F 71 35 52 00 12 E1 85 05 D2 1F 71 3F 52 00 12 \
+#  E0 85 05 D2 05 71 49 52 00 3A 70 32 00 97 75 57 \
+#  12 A0 FE E3 02 0A 50 32 01 97 75 63 12 BC FE E3 \
+#  02 0A 50 12 BC FE E3 95 75 75 85 12 A0 FE E3 95 \
+#  75 C4 85 77 B6 12 A0 FE E3 95 75 7F 85 77 BD 16 \
+#  E0 DA 02 71 BD 77 C4 32 05 97 71 97 32 02 97 71 \
+#  B6 06 E1 D2 01 71 B6 06 E3 67 AF 75 B6 32 03 97 \
+#  71 C4 32 04 97 75 BD 06 E2 D2 07 71 BD 77 C4 12 \
+#  80 F8 15 1A 00 57 32 0E 87 32 0E 87 57 32 0E 87 \
+#  32 0F 87 57 32 0F 87 32 0E 87 57'
+
+# Led program from Quanta
+#local ledcode '\
+#    02 1B 28 60 C0 67 0E 90 \
+#    D2 19 74 02 3A 08 12 80 \
+#    F8 15 1A 00 75 27 32 08 \
+#    D7 87 32 00 D7 87 32 01 \
+#    D7 87 32 0F D7 87 57 32 \
+#    08 D7 87 32 0E D7 87 32 \
+#    0E D7 87 32 0E D7 87 57 \
+#    00 00 00 00 00 00 00 00'
+
+#local ledcode '\
+# 02 1D 28 60 C0 67 1E 02 1C 28 60 C0 67 1E 02 1B \
+# 28 60 C0 67 1E 02 1A 28 60 C0 67 1E 3A 10 12 A0 \
+# F8 15 1A 00 75 37 32 0F D7 87 32 01 D7 87 32 00 \
+# D7 87 32 08 D7 87 57 32 0E D7 87 32 0E D7 87 32 \
+# 0E D7 87 32 08 D7 87 57 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+# 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+
+counter off
+linkscan off
+l2mode off
+echo "rc: Initializing device"
+init soc
+init misc
+init mmu
+init bcm
+echo "rc: Set up device"
+#l2mode interval=3000000
+linkscan 250000
+echo "rc: Set up ports"
+#port e linkscan=on autoneg=on speed=0 fullduplex=true txpause=true rxpause=true
+#port st linkscan=on txpause=false rxpause=false
+port xe linkscan=on autoneg=off speed=10000 fullduplex=true txpause=true \
+    rxpause=true
+stg stp 1 all forward
+counter sync
+#led prog $ledcode
+#*:led stop; *:led start
+echo "rc: unit $unit complete"
+
+# Setup ofdatapath command line
+
+if $?watchdog "setenv wd_arg '--watchdog'" else "setenv wd_arg ''"
+
+# Use DPID for datapath id if specified
+setenv dpid_arg ""
+if $?dpid "setenv dpid_arg '-d $dpid'"
+
+if $?ofd_params "" else \
+    "setenv ofd_params '$dpid_arg $wd_arg -m 1 -M 48 ptcp:'"
+
+if $?no_ofd \
+    "echo OpenFlow datapath startup disabled" \
+    exit
+
+# Start up OpenFlow datapath
+if !"expr $unit == $units - 1" \
+    "echo Starting OpenFlow datapath: ofd $ofd_params" \
+    "bg 'ofd $ofd_params'"
+
+# Start up Command Server; should not return
+if !"expr $unit == $units - 1" \
+    "echo Starting Command Server: cmdsrv" \
+    "cmdsrv"
+
+# Experimental:  Loop forever and sleep
+#if ! $?interactive \
+#   "echo Non-interactive entering sleep loop" \
+#   "loop * 'sleep 10000'"

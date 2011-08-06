@@ -1,0 +1,4 @@
+Most of the files in this directory are no longer used.  Files here are 
+kept as reference as other platforms are ported to the new setup
+with all platform specific files kept in the template rootfs.
+

@@ -1,0 +1,96 @@
+#
+# Simple rc.soc file for Stanford-LB4G indigo binary release
+#
+
+echo "rc: unit $unit"
+
+# Led program for 73xx; should work for both platforms
+
+local ledcode '\
+ 06 7E 12 08 D8 71 09 77 0F 12 01 61 7C 77 13 12 \
+ 00 61 7C 12 0F 80 D8 71 1D 60 7E 77 21 02 00 60 \
+ 7E 12 00 61 7A 29 FA 80 05 20 67 6C 67 7B 16 7A \
+ 29 FA 80 05 20 67 7F 16 7A 29 FA 80 05 20 67 85 \
+ 16 7A 81 DA 18 74 23 12 1B 61 78 29 FA 80 05 20 \
+ 67 5D 67 7B 16 78 91 DA 17 74 49 3A 68 D7 32 00 \
+ 32 01 B7 32 02 B7 26 7C C7 B7 87 57 D7 32 00 32 \
+ 01 B7 32 02 B7 26 7C C7 B7 87 57 32 0F 87 57 32 \
+ 04 C7 D7 87 57 32 04 D7 C7 D7 87 57 00 00 00 00 \
+ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 \
+ 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00'
+
+counter off
+linkscan off
+l2mode off
+echo "rc: Initializing device"
+init soc
+init misc
+init mmu
+init bcm
+echo "rc: Set up device"
+#l2mode interval=3000000
+linkscan 250000
+echo "rc: Set up ports"
+port e linkscan=on autoneg=on speed=0 fullduplex=true txpause=true rxpause=true
+port xe linkscan=on autoneg=off speed=10000 fullduplex=true txpause=true \
+    rxpause=true
+
+# If on 7352, set HG parameters for proper ports
+setenv hg_params "linkscan=on txpause=false rxpause=false"
+if !"expr $units == 2" "setenv is7352 1"
+if !"expr $unit == 0" "setenv hg_ports 'hg2,hg3'"
+if !"expr $unit == 1" "setenv hg_ports 'hg0,hg1'"
+if $?is7352 "port $hg_ports $hg_params"
+
+stg stp 1 all forward
+counter sync
+led prog $ledcode
+if !"expr $unit == $units - 1" \
+    "*:led stop; *:led start"
+echo "base rc: unit $unit complete"
+
+#
+# Command line options for openflowd from config.bcm
+#    watchdog   Turn on unresponsive auto reset
+#    dp_mgmt    Allow connection to controller from dataplane ports
+#    dpid       Set the datapath ID
+#
+
+if $?watchdog "setenv wd_arg '--watchdog'" else "setenv wd_arg ''"
+
+# dp_mgmt is required on this platform
+setenv dp_mgmt_arg '--dp-mgmt'
+
+setenv desc_arg '--dp_desc="__INDIGO_REL_NAME__"'
+
+# Use DPID for datapath id if specified
+setenv dpid_arg ""
+if $?dpid "setenv dpid_arg '-d $dpid'"
+
+#
+# FIXME:  Support 48-port system.
+#
+
+setenv max_port 26
+if $?is7352 "setenv max_port 50"
+setenv if_arg "-M $max_port"
+
+if $?ofd_params "" else \
+    "setenv ofd_params '$dpid_arg $wd_arg $dp_mgmt_arg $wd_arg $if_arg ptcp:'"
+
+# When unit 1 has been initialized, run ofdatapath
+if !"expr $unit == $units - 1" \
+    'if $?no_ofd \
+        "echo OpenFlow datapath startup disabled" \
+        exit'
+
+# Start up OpenFlow datapath:  DOES NOT RETURN
+if !"expr $unit == $units - 1" \
+    "echo Starting OpenFlow datapath: ofd $ofd_params" \
+    "ofd $ofd_params"
+

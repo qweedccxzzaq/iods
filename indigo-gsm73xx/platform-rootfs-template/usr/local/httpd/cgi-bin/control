@@ -1,0 +1,101 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <title>GSM73xx System Configuration</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+
+<body>
+
+<div id="header">
+
+
+<% 
+   require "web_common"
+   print(top_matter)
+%>
+
+    <div id="menu">
+
+        <ul id="main">
+            <li id="m-system"><a href="settings"><span>System</span></a></li>
+            <li id="m-monitoring"><a href="portstats"><span>Monitoring</span></a></li>
+            <li id="m-maintenance" class="active"><a href="upload"><span>Maintenance</span></a></li>
+            <li id="m-help"><a href="help"><span>Help</span></a></li>
+        </ul>
+
+        <ul id="sub">
+            <li><a href="upload"><span>Upload</span></a></li>
+            <li><a href="reflash"><span>Reflash</span></a></li>
+            <li><a href="reboot"><span>Reboot</span></a></li>
+            <li><a href="restart"><span>Restart Processes</span></a></li>
+            <li class="last"><a href="integrity"><span>Integrity</span></a></li>
+        </ul>
+
+    </div>
+
+</div>
+
+<div id="container">
+
+    <div id="sidebar">
+
+        <ul>
+            <li><a href="#"></a></li>
+        </ul>
+
+    </div>
+
+    <div id="content">
+
+<h2>OpenFlow System Control</h2>
+
+<table cellpadding="10">
+<tr>
+<td><form name="upload" action="upload" method="GET">
+<input type="submit" value="Upload new firmware"></form></td>
+<td>Use TFTP or your web browser</td>
+</tr>
+<tr>
+<td><form name="reflash" action="reflash" method="GET">
+<input type="submit" value="Reflash the switch"></form></td><td>Must have already uploaded firmware</td>
+</tr>
+<tr>
+<td><form name="reboot" action="reboot" method="GET">
+<input type="submit" value="Reboot the switch"></form></td>
+<td> </td>
+</tr>
+</table>
+<br><br>
+The following are to be implemented:
+<ul>
+<li>Restart the OpenFlow protocol deamon
+<li>Restart the OpenFlow datapath daemon
+<li>Run test on sfs
+<li>Ping the controller and show results
+</ul>
+
+    </div>
+
+<div class="clearer"></div>
+<div id="btm"></div>
+</div>
+
+<div id="footer">
+
+    <p id="copyright">Copyright &copy; 1996-2011 Netgear &reg;</p>
+
+</div>
+
+</body>
+</html>
+
+
+

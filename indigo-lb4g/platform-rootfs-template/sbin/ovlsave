@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# Script to save files to an overlay, Pronto 3240
+#
+# The list of files to save is stored in /etc/overlay-files
+# and should contain absolute filenames
+#
+
+source /etc/find-env
+
+overlay_dir=/local/sfs/overlay
+if test -e /etc/overlay-files; then
+    cd /
+    mkdir -p $overlay_dir
+    for file in `cat /etc/overlay-files`; do
+        if test -e $file; then
+            echo "Storing $file in $overlay_dir/$file"
+            cp -a $file $overlay_dir/$file
+        else
+            echo "Could not find $file"
+        fi
+    done
+    cd $client_root && sfs_create
+else
+    echo "No files found in /etc/overlay-files"
+    echo "Try ovladd to add files"
+fi

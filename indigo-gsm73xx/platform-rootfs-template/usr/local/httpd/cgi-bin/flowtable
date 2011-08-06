@@ -1,0 +1,165 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <title>GSM73xx OpenFlow Flow Table</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+
+<body>
+
+<div id="header">
+
+<%
+   require "web_common"
+   print(top_matter)
+%>
+
+    <div id="menu">
+
+        <ul id="main">
+            <li id="m-system"><a href="settings"><span>System</span></a></li>
+            <li id="m-monitoring" class="active"><a href="portstats"><span>Monitoring</span></a></li>
+            <li id="m-maintenance"><a href="upload"><span>Maintenance</span></a></li>
+            <li id="m-help"><a href="help"><span>Help</span></a></li>
+        </ul>
+
+        <ul id="sub">
+            <li><a href="portstats"><span>Port Statistics</span></a></li>
+            <li><a href="port"><span>Port Status</span></a></li>
+            <li class="active"><a href="flowtable"><span>Flow Table</span></a></li>
+            <li class="last"><a href="logs"><span>Logs</span></a></li>
+        </ul>
+
+    </div>
+
+</div>
+
+<div id="container">
+
+    <div id="sidebar">
+
+        <ul>
+            <li class="active"><a href="flowtable">Flow Table</a></li>
+        </ul>
+
+    </div>
+
+    <div id="content">
+
+<h2>OpenFlow Flow Table</h2>
+
+<form name="input" action="flowtable" method="GET">
+
+<p>
+<input type="radio" name="displevel" value="extended"
+<% if FORM.displevel ~= "full" then print "CHECKED" end %> \>Normal Display
+
+<input type="radio" name="displevel" value="full" 
+<% if FORM.displevel == "full" then print "CHECKED" end %> \>Detailed Display
+
+<input type="submit" value="Refresh Table" />
+</p>
+
+<div class="dotted wider">
+<%
+   require "ui_cs_op"
+   require "ui_utils"
+
+   status, results, err_str = cs_flowtable_get()
+   local row_count = 0
+
+   if status ~= CS_REST_OKAY and err_str then
+      printf("<font color=red><b>Error %s retrieving flowtable: %s.\n",
+             tostring(status), tostring(err_str))
+      printf("</b></font>\n")
+   else
+      if results == nil or #results == 0 then
+         print("No flow table entries returned")
+      else
+         print("Note: TO=Time Out\n")
+         if FORM.displevel == "full" then
+            table_start('<table class="tbl">','<tr>'," |Entry|Entry|Entry")
+         else
+            table_start([[
+                 <table class="tbl">
+                   <tr>
+                     <th colspan="12" class="heading">OpenFlow Flow Table</th>
+                   </tr>
+            ]],'<tr>',
+                        "Port|L2 Source|L2 Dest|VLAN|IP Source|IP Dest|"..
+                        "TCP Port|TCP Dest|Idle TO|Hard TO|Packets|Cookie")
+         end
+
+         for i, entry in ipairs(results) do
+            if FORM.displevel == "full" then
+               if ((i + 2) % 3) == 0 then
+                  row_count = row_count + 1
+                  print("</tr>")
+                  start_row(row_count)
+                  print("<td>"..tostring(i).."</td>")
+               end
+               if ((i + 2) % 3) == 2 then
+                  printf("<td %s><pre>", last_col_elt)
+               else
+                  print("<td><pre>")
+               end
+               print("Entry " .. tostring(i))
+               -- Fix L3 addrs
+               entry.nw_src = iptostring(entry.nw_src)
+               entry.nw_dst = iptostring(entry.nw_dst)
+               entry.nw_src_mask = iptostring(entry.nw_src_mask)
+               entry.nw_dst_mask = iptostring(entry.nw_dst_mask)
+               generic_show(entry)
+               print("</pre></td>")
+            else
+               start_row(i)
+               printf("<td>%s</td><td>%s</td><td>%s</td><td>%s</td>" ..
+                      "<td>%s</td><td>%s</td><td>%s</td><td>%s</td>" ..
+                      "<td>%s</td><td>%s</td><td>%s</td><td %s>%s</td>\n", 
+                      tostring(entry.in_port),
+                      entry.dl_src,
+                      entry.dl_dst,
+                      tostring(entry.dl_vlan),
+                      iptostring(entry.nw_src),
+                      iptostring(entry.nw_dst),
+                      tostring(entry.tp_src),
+                      tostring(entry.tp_dst),
+                      tostring(entry.idle_timeout),
+                      tostring(entry.hard_timeout),
+                      tostring(entry.packet_count),
+                      last_col_elt,
+                      tostring(entry.cookie))
+               print("</tr>")
+            end
+         end
+      end
+   end
+%>
+
+</table>
+</div>
+
+</form> 
+
+    </div>
+
+<div class="clearer"></div>
+<div id="btm"></div>
+</div>
+
+<div id="footer">
+
+    <p id="copyright">Copyright &copy; 1996-2011 Netgear &reg;</p>
+
+</div>
+
+</body>
+</html>
+

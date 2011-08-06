@@ -1,0 +1,44 @@
+#!/bin/sh
+
+ARCH_PROFILE="/etc/profile"
+
+###################################################################
+## prepare the system MAC address
+if [ -e /etc/fw_env.config ] ; then
+mac_addr=$(fw_printenv | grep "ethaddr" | awk -F "=" '{printf $2}')
+fi
+[ -z "$mac_addr" ] && {
+	echo "[WARNNING] No Mac address is defined, Use default Mac address!"
+	mac_addr="00:33:aa:11:44:55"
+}
+
+echo "MAC_ADDR=$mac_addr" >> $ARCH_PROFILE
+
+##################################################################
+## prepare the passwd and group file.
+passwd_file="/config/passwd"
+group_file="/config/group"
+
+# default user name is root and password is 123456
+# you can override the setting in /etc/rc.product-pre.
+[ ! -e $passwd_file ] && {
+cat > $passwd_file << EOF
+root:\$1\$ft4Nk2v6\$URmeg6MJBRcvPsoTkHd671:0:0:root:/root:/bin/vtysh
+EOF
+}
+
+[ -e /etc/passwd ] && rm -rf /etc/passwd
+ln -s $passwd_file /etc/passwd
+
+
+[ ! -e $group_file  ] && {
+cat > $group_file << EOF
+root:x:0:
+EOF
+}
+
+[ -e /etc/group  ] && rm -rf /etc/group
+ln -s $group_file /etc/group
+
+## execute project specify config before system
+[ -x /etc/rc.product-pre ] && /etc/rc.product-pre

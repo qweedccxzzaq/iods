@@ -1,0 +1,4 @@
+#!/bin/sh
+cd /cf_card
+tftp -r uInitrd2m -g 192.168.2.10
+md5sum uInitrd2m

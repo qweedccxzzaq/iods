@@ -1,0 +1,25 @@
+# config.bcm
+#
+# This configuration file contains variables used by the BCM CLI
+# and is read during initialization.  It is specific to the Pronto-3240/
+# LB4G platform.
+
+# Set Phy addresses for 10-gig/higig ports
+port_phy_addr_xe0.0=0x42
+port_phy_addr_xe1.0=0x43
+port_phy_addr_xe0.1=0x46
+port_phy_addr_xe1.1=0x47
+port_phy_addr_hg0.0=0xd8
+port_phy_addr_hg1.0=0xd9
+port_phy_addr_hg0.1=0xd8
+port_phy_addr_hg1.1=0xd9
+
+# Set up 10-gig ports as ethernet
+pbmp_xport_xe.0=0x0c000000
+pbmp_xport_xe.1=0x0c000000
+
+# Set interconnect ports to 12-gig
+xgxs_lcpll_12gbps=1
+
+# Uncomment for disabling automatic OpenFlow datapath execution from CLI
+#no_ofd=1

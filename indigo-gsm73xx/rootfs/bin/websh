@@ -1,0 +1,8 @@
+#!/bin/sh
+
+daemon=$(cat /var/run/webcmd.db | grep -m 1 $1 | awk -F "=" '{printf $2}')
+
+[ -z $daemon ] && echo "Unknow command" && exit 0
+
+vtysh -d $daemon -c "$*"
+

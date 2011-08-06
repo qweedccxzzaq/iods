@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# Unpack overlay
+# If backup already exists do not overwrite only if -f is specified
+#
+
+usage="$0: Copy overlay to filesystem"
+source /etc/find-env
+verbose=1
+#verbose=
+
+overlay_dir=$config_dir/overlay
+overlay_backup_dir=$client_root/overlay-backup
+overlay_done_file=/tmp/.overlay_done
+
+if [ -d $overlay_dir ]; then
+    if [ ! -f $overlay_done_file ]; then
+        [ $verbose ] && echo "Backing up to $overlay_backup_dir"
+        mkdir -p $overlay_backup_dir
+        for f in `find $overlay_dir -type f -print`; do
+            target_file=`echo $f |sed -e "s:^$overlay_dir::"`
+            p_dir=`echo $target_file |sed -e "s:/[^/]*$::g"`
+            echo "Backing up file $target_file; parent dir $p_dir"
+            mkdir -p $overlay_backup_dir/$p_dir
+            cp -a $target_file $overlay_backup_dir/$target_file
+        done
+    else
+        [ $verbose ] && echo "Not backing up files"
+    fi
+    [ $verbose ] && echo "Copying overlay dir $overlay_dir to root FS"
+    cp -a $overlay_dir/* /
+    touch  $overlay_done_file
+fi

@@ -1,0 +1,111 @@
+#!/bin/sh
+
+################################################################
+#
+# Default LB4G OpenFlow Switch Setup
+#
+# See rc.sh and README-config for more info
+#
+# Environment variables affecting initialization
+#
+#     CONTROLLER:  If set, connect to controller on this IP
+#     CTRL_PORT:   If set, use this port; optional
+#     watchdog:    If set, add watchdog to config.bcm
+#     dpid:        If set, add dpid setting to config.bcm
+#     TAP0_IP:     If set, configure tap0 after of-bcm-cli
+#                  is brought up and add dp_mgmt to config.bcm
+#
+################################################################
+
+echo "User mode OpenFlow executable selected"
+
+source /etc/find-env
+
+if test -n "$auto_restart"; then echo "Auto restart not yet supported"; fi
+
+#
+# Bring up the BCM shell in it's own directory for isolation on DHCP
+#
+
+if test -z "$client_root"; then
+    echo "Error System Config: client_root is required"
+    exit 1
+fi
+
+# Copy rc.soc and config.bcm init files to client root directory
+if test -e $client_rc_soc; then
+    cp $client_rc_soc $client_root
+else
+    echo "ERROR: Could not find rc.soc init file for BCM shell; exiting"
+    exit 1
+fi
+if test -e $client_config_bcm; then
+    cp $client_config_bcm $client_root
+else
+    echo "WARNING: No config.bcm file found"
+fi
+
+# Boot args conveyed to of-bcm-cli through config.bcm:
+#   watchdog, datapath ID, dp_mgmt, portlist, init_port_state, add_port_state
+if test -n "$watchdog" ; then 
+    echo "Watchdog enabled"
+    echo watchdog=1 >> $client_root/config.bcm
+fi
+if test -n "$dpid" ; then 
+    dpid_check=`echo $dpid | tr "0-9a-fA-F" "X"`
+    if test $dpid_check != "XXXXXXXXXXXX"; then
+        echo "ERROR:  Invalid DPID string $dpid.  Must be 12 hex digits"
+        echo "DPID ignored"
+    else
+        echo "Setting DPID to $dpid"
+        echo dpid=$dpid >> $client_root/config.bcm
+    fi
+fi
+if test -n "$dp_mgmt" ; then 
+    echo "Setting dp_mgmt"
+    echo dp_mgmt=$dp_mgmt >> $client_root/config.bcm
+fi
+if test -n "$portlist" ; then 
+    echo "Setting port list to $portlist"
+    echo portlist=$portlist >> $client_root/config.bcm
+fi
+if test -n "$init_port_state" ; then 
+    echo "Setting init_port_state to $init_port_state"
+    echo init_port_state=$init_port_state >> $client_root/config.bcm
+fi
+if test -n "$add_port_state" ; then 
+    echo "Setting add_port_state to $add_port_state"
+    echo add_port_state=$add_port_state >> $client_root/config.bcm
+fi
+
+cd $client_root
+echo "Running CLI in $client_root"
+/sbin/of-bcm-cli < /dev/null > $client_root/cli.log 2>&1 &
+echo "OF-BCM CLI running"
+
+sleep 3  # Check this timing; need TAP0 for dp_mgmt created
+
+#
+# If TAP_ADDR is set, configure the tap0 interface.  This has to be
+# done after of-bcm-cli adds the tap interface.
+#
+if test -n "$TAP0_IP"; then
+    echo "Setting TAP0 address to $TAP0_IP"
+    /sbin/ifconfig tap0 $TAP0_IP
+fi
+
+#
+# Start the controller here
+#
+
+if test -n "$CONTROLLER"; then
+    if test -z "$CTRL_PORT"; then export CTRL_PORT=6634; fi
+    echo "Contacting controller at $CONTROLLER:$CTRL_PORT"
+    if test -n "$OFP_OPTIONS"; then
+        echo "Using extra arguments:  $OFP_OPTIONS"
+    fi
+    ofprotocol $OFP_OPTIONS tcp:127.0.0.1 tcp:$CONTROLLER:$CTRL_PORT > \
+        $client_root/ctrl.log 2>&1 &
+fi
+
+echo "System Config File Complete"

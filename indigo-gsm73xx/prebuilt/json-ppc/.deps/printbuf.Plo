@@ -1,0 +1,127 @@
+printbuf.lo printbuf.o: ../printbuf.c config.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/stdio.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/features.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_config.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_arch_features.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/cdefs.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/stddef.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/types.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/wordsize.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/kernel_types.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/typesizes.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/pthreadtypes.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sched.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_stdio.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/wchar.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/wchar.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_mutex.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/pthread.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sched.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/time.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/time.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_clk_tck.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/signal.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sigset.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/initspin.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sigthread.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_pthread.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/stdarg.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/stdio_lim.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/stdlib.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/waitflags.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/waitstatus.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/endian.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/endian.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/types.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/select.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/select.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/sysmacros.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/alloca.h \
+  /home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/string.h \
+  ../bits.h ../debug.h ../printbuf.h
+
+config.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/stdio.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/features.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_config.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_arch_features.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/cdefs.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/stddef.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/types.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/wordsize.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/kernel_types.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/typesizes.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/pthreadtypes.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sched.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_stdio.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/wchar.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/wchar.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_mutex.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/pthread.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sched.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/time.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/time.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_clk_tck.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/signal.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sigset.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/initspin.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/sigthread.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/uClibc_pthread.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../lib/gcc/powerpc-85xx-linux-uclibc/4.2.4/include/stdarg.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/stdio_lim.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/stdlib.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/waitflags.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/waitstatus.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/endian.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/endian.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/types.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/select.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/bits/select.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/sys/sysmacros.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/alloca.h:
+
+/home/dtalayco/tools/ntgr-bld-env/patch-format-release/toolkit/gsm73xx/bin/../powerpc-85xx-linux-uclibc/sys-root/usr/include/string.h:
+
+../bits.h:
+
+../debug.h:
+
+../printbuf.h:

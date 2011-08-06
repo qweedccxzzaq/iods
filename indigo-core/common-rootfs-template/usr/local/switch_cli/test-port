@@ -1,0 +1,14 @@
+-- Script to test CLI port commands
+port show 10
+port set 1 speed=100
+port stats 10
+port show 1-10
+port show *
+port set * speed=10 autoneg=no mtu=1600
+ps *
+ps 1-3,4,5,18
+ps
+ps * -l
+ps -l
+ps 1-5 -l
+port stats 1-10 -l

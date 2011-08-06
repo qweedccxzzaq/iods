@@ -1,0 +1,39 @@
+#!/bin/sh
+
+if test -e /sbin/sfs_extract; then
+    cd /local
+    /sbin/sfs_extract /local
+else
+    echo "No utility to set up SFS"
+fi
+
+source /etc/find-env
+
+if test -f $config_dir/indigo-preinit.sh; then
+    echo "Sourcing $config_dir/indigo-preinit.sh"
+    source $config_dir/indigo-preinit.sh
+fi
+
+# bring up loopback net-dev
+ifconfig lo 127.0.0.1
+insmod /drivers/tun.ko
+[ ! -e /dev/linux-uk-proxy ] && mknod /dev/linux-uk-proxy c 125 0
+[ ! -e /dev/linux-user-bde ] && mknod /dev/linux-user-bde c 126 0
+[ ! -e /dev/linux-kernel-bde ] && mknod /dev/linux-kernel-bde c 127 0
+mkdir -p /dev/net
+[ ! -e /dev/net/tun ] && mknod /dev/net/tun c 10 200
+
+# Usually /etc/system_init
+if test -n "$sys_init_file"; then
+    echo "Running $sys_init_file"
+    source $sys_init_file
+else
+    echo "No system init file found"
+    echo "Manual configuration required"
+fi
+
+# if the auto-Init-tools isn't interrup.
+# mark the system have startup complete.
+# else 
+# means the system have been put in debug mode.
+touch /tmp/.sysok

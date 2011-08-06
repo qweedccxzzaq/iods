@@ -1,0 +1,18 @@
+#!/bin/sh
+#
+# Script to restart OpenFlow daemons
+#
+verbose=1
+[ $verbose = 1 ] && echo "Restarting OpenFlow daemons"
+[ $verbose = 1 ] && echo "Kill of-bcm-cli"
+killall of-bcm-cli
+[ $verbose = 1 ] && echo "Kill ofprotocol"
+killall ofprotocol
+sleep 2
+
+source /etc/find-env
+
+if test -e $sys_config_file; then
+    [ $verbose = 1 ] && echo "Running $sys_config_file"
+    source $sys_config_file
+fi

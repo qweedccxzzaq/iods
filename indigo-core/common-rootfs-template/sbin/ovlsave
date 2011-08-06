@@ -1,0 +1,67 @@
+#!/bin/sh
+#
+# Script to save files to an overlay, Pronto 3290
+#
+# The list of files to save is stored in /etc/overlay-files
+# and should contain absolute filenames
+#
+
+source /etc/find-env
+
+help="ovlsave [-c|-h]:  Save overlay files; -c ERASE contents first"
+
+if test -n "$1"; then
+    if test "$1" == "-h"; then
+        echo $help
+        exit 0
+    elif test "$1" != "-c"; then
+        echo $help
+        exit 1
+    fi
+fi
+
+if test -n "$2"; then
+    echo $help
+    exit 1
+fi
+
+# Determine location of overlay target
+
+overlay_dir=$config_dir/overlay
+
+if test -e /etc/overlay-files; then
+    # Sanity check:  Do not allow find-env or overlay files
+    grep -q -e /etc/find-env -e '^/local/overlay/' -e '^/local/sfs/overlay' \
+        -e '.overlay_done$' /etc/overlay-files
+    if test $? == 0; then
+        echo "Found find-env or /overlay/ or .overlay_done in overlay-files"
+        echo "These file patterns are not permitted"
+        exit 1
+    fi
+    cd /
+    mkdir -p $overlay_dir
+
+    if test "$1" != "-c"; then
+        echo "Erasing current overlay contents"
+        rm -rf $overlay_dir/*
+    fi
+
+    for file in `cat /etc/overlay-files`; do
+        file=`echo $file | sed -e 's:/$::g'`
+        dir=`echo $file | sed -e 's:[^/]*$::g'`
+        if test -e $file; then
+            echo "Storing $file in $overlay_dir/$file"
+            mkdir -p $overlay_dir/$dir
+            cp -a $file $overlay_dir/$dir
+        else
+            echo "Could not find $file"
+        fi
+    done
+    if test -n "$use_sfs"; then
+        cd /local
+        sfs_create
+    fi
+else
+    echo "No files found in /etc/overlay-files"
+    echo "Try ovladd to add files"
+fi

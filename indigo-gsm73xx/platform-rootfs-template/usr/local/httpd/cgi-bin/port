@@ -1,0 +1,136 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <title>GSM73xx OpenFlow Port Status</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+
+<body>
+
+<div id="header">
+
+<% 
+   require "web_common"
+   print(top_matter)
+%>
+
+    <div id="menu">
+
+        <ul id="main">
+            <li id="m-system"><a href="settings"><span>System</span></a></li>
+            <li id="m-monitoring" class="active"><a href="portstats"><span>Monitoring</span></a></li>
+            <li id="m-maintenance"><a href="upload"><span>Maintenance</span></a></li>
+            <li id="m-help"><a href="help"><span>Help</span></a></li>
+        </ul>
+
+        <ul id="sub">
+            <li><a href="portstats"><span>Port Statistics</span></a></li>
+            <li class="active"><a href="port"><span>Port Status</span></a></li>
+            <li><a href="flowtable"><span>Flow Table</span></a></li>
+            <li class="last"><a href="logs"><span>Logs</span></a></li>
+        </ul>
+
+    </div>
+
+</div>
+
+<div id="container">
+
+    <div id="sidebar">
+
+        <ul>
+            <li class="active"><a href="port">Port Status</a></li>
+        </ul>
+
+    </div>
+
+    <div id="content">
+
+
+<h2>Port Control and Status</h2>
+
+<form name="input" action="port" method="GET">
+
+<p><input type="submit" value="Refresh Table" /></p>
+
+<div class="wide">
+<%
+   require "ui_cs_op"
+   require "ui_utils"
+
+   local port_count = get_port_count()
+
+   -- TODO Add fields to select one port and change its settings
+   if port_count >= 0 then
+      table_start([[
+                 <table class="tbl">
+                   <tr>
+                     <th colspan="9" class="heading">Port Status</th>
+                   </tr>
+         ]],'<tr>',
+                  "Port|Enabled|Link|Speed|Autoneg|MTU|RX Pause|TX Pause|Duplex")
+
+      -- Iterate over ports and report info
+      for i=1,port_count do
+         status,result,err_str = cs_port_get(i)
+         start_row(i)
+         if status ~= CS_REST_OKAY then
+            print("<td colspan='9'>Error getting information for port "
+                  .. i .. "</td></tr>\n")
+         else
+            local port_info = result[1]
+            en = two_choice(port_info.enable, "no", "yes")
+            link = two_choice(port_info.link, "down", "up")
+            duplex = two_choice(port_info.duplex, "half", "full")
+            if link == "up" then
+               printf("<td><b>%s</b></td>", tostring(i))
+            else
+               duplex = "-"
+               printf("<td>%s</td>", tostring(i))
+            end
+            printf("<td>%s</td><td>%s</td><td>%s</td><td>%s</td>" ..
+                   "<td>%s</td><td>%s</td><td>%s</td><td %s>%s</td>\n",
+                   en,
+                   link,
+                   tostring(port_info.speed),
+                   en_dis(port_info.autoneg),
+                   tostring(port_info.mtu),
+                   en_dis(port_info["rx_pause"]),
+                   en_dis(port_info["tx_pause"]),
+                   last_col_elt,
+                   duplex
+                   )
+            print("</tr>")
+         end
+      end
+   else
+
+   end
+%>
+
+</table>
+</div>
+
+</form> 
+
+    </div>
+
+<div class="clearer"></div>
+<div id="btm"></div>
+</div>
+
+<div id="footer">
+
+    <p id="copyright">Copyright &copy; 1996-2011 Netgear &reg;</p>
+
+</div>
+
+</body>
+</html>

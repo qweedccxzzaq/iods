@@ -1,0 +1,33 @@
+# This is an empty config.bcm file for the Stanford-Boardcom
+# OpenFlow binary release.
+#
+# You may place your own version of this in an /sfs/ directory
+#
+# The OpenFlow related parameters follow:
+#
+# ofd_params:  The parameters to be passed to the ofdatapath command
+# ofd_params='--interfaces=<comma-separated-portlist> ptcp:'
+#
+# no_ofd:  If set, do not start OpenFlow daemon automatically
+#
+#no_ofd=1
+
+config add pbmp_xport_xe.0=0x00000003000000
+config add port_phy_addr_xe0.0=0x40
+config add port_phy_addr_xe1.0=0x41
+
+phy_automedium_ge20=1
+phy_automedium_ge21=1
+phy_automedium_ge22=1
+phy_automedium_ge23=1
+
+phy_fiber_pref_ge20=1
+phy_fiber_pref_ge21=1
+phy_fiber_pref_ge22=1
+phy_fiber_pref_ge23=1
+
+phy_fiber_detect_ge20=-2
+phy_fiber_detect_ge21=-2
+phy_fiber_detect_ge22=-2
+phy_fiber_detect_ge23=-2
+

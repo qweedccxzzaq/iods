@@ -1,0 +1,206 @@
+json_util.lo json_util.o: ../json_util.c config.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/stdio.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/features.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/cdefs.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/wordsize.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/gnu/stubs.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/gnu/stubs-32.h \
+  /home/dtalayco/work/ELDK_4.2/usr/bin/../lib/gcc/powerpc-linux/4.2.2/include/stddef.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/types.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/typesizes.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/libio.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/_G_config.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/wchar.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/wchar.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/gconv.h \
+  /home/dtalayco/work/ELDK_4.2/usr/bin/../lib/gcc/powerpc-linux/4.2.2/include/stdarg.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/libio-ldbl.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stdio_lim.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/sys_errlist.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stdio.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stdio-ldbl.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/stdlib.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/waitflags.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/waitstatus.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/endian.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/endian.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/xlocale.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/types.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/time.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/select.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/select.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/sigset.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/time.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/sysmacros.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/pthreadtypes.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/alloca.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stdlib-ldbl.h \
+  /home/dtalayco/work/ELDK_4.2/usr/bin/../lib/gcc/powerpc-linux/4.2.2/include/limits.h \
+  /home/dtalayco/work/ELDK_4.2/usr/bin/../lib/gcc/powerpc-linux/4.2.2/include/syslimits.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/limits.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/posix1_lim.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/local_lim.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/linux/limits.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/posix2_lim.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/xopen_lim.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/string.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/string.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/string2.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/errno.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/errno.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/linux/errno.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/asm/errno.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/asm-generic/errno.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/asm-generic/errno-base.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/stat.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stat.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/fcntl.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/fcntl.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/uio.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/unistd.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/posix_opt.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/environments.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/confname.h \
+  /home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/getopt.h \
+  ../bits.h ../debug.h ../printbuf.h ../json_object.h ../json_tokener.h \
+  ../json_util.h
+
+config.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/stdio.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/features.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/cdefs.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/wordsize.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/gnu/stubs.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/gnu/stubs-32.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/bin/../lib/gcc/powerpc-linux/4.2.2/include/stddef.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/types.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/typesizes.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/libio.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/_G_config.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/wchar.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/wchar.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/gconv.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/bin/../lib/gcc/powerpc-linux/4.2.2/include/stdarg.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/libio-ldbl.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stdio_lim.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/sys_errlist.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stdio.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stdio-ldbl.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/stdlib.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/waitflags.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/waitstatus.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/endian.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/endian.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/xlocale.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/types.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/time.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/select.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/select.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/sigset.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/time.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/sysmacros.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/pthreadtypes.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/alloca.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stdlib-ldbl.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/bin/../lib/gcc/powerpc-linux/4.2.2/include/limits.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/bin/../lib/gcc/powerpc-linux/4.2.2/include/syslimits.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/limits.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/posix1_lim.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/local_lim.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/linux/limits.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/posix2_lim.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/xopen_lim.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/string.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/string.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/string2.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/errno.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/errno.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/linux/errno.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/asm/errno.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/asm-generic/errno.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/asm-generic/errno-base.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/sys/stat.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/stat.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/fcntl.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/fcntl.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/uio.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/unistd.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/posix_opt.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/environments.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/bits/confname.h:
+
+/home/dtalayco/work/ELDK_4.2/usr/../ppc_85xx/usr/include/getopt.h:
+
+../bits.h:
+
+../debug.h:
+
+../printbuf.h:
+
+../json_object.h:
+
+../json_tokener.h:
+
+../json_util.h:

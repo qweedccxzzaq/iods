@@ -1,0 +1,38 @@
+
+The init script's name must follow the S???* patten.
+It means the max init script number is 999.
+
+The file is use to trace the init-number assign.
+
+I will give a range for general purpose
+range			purpose
+0 ~ 9			reserver
+10 ~ 99			devices
+100 ~ 199		general sys services
+200 ~ 299		specify services
+
+The follow field is used to trace the number assgin
+it must follow the increate order.
+
+number			function
+008			config folder prepare
+010			system-prepare
+012			bcm-sdk
+013			mvl-sdk
+014			npe (kernel module, etc. veth.ko vbond.ko switch.ko)
+
+101			busybox (general tools site)
+103			nfs
+
+220			hostapd (auth core)
+230			quagga (L2/3 protocol site)
+235			futsoft-ISS
+
+290~299			Net UI (etc. telnet, http, https, sshd ...)
+	291		telnet
+	292		sshd
+	293		http
+	294		https
+	295		snmpd
+
+900			system-init-end

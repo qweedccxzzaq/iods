@@ -1,0 +1,42 @@
+#!/bin/sh
+#
+# Script to restore an overlay file to its original version
+#
+# Non-absolute paths are relative to current directory
+#
+
+source /etc/find-env
+
+help="ovlrestore <file>:  Restore an overlay file to its original version"
+
+if test -z "$1"; then
+    echo $help
+    exit 1
+fi
+
+if test -n "$2"; then
+    echo $help
+    exit 1
+fi
+
+if test "$1" == "-h"; then
+    echo $help
+    exit 0
+fi
+
+if test -z "`echo $1 | grep -e '^/'`"; then
+    filename=`pwd`/$1
+else
+    filename=$1
+fi
+
+overlay_backup_dir=$client_root/overlay-backup
+
+if test -f $overlay_backup_dir/$filename; then
+    cp -f $overlay_backup_dir/$filename $filename
+    echo "Restored file $filename from persistent overlay"
+else
+    echo "Did not find $filename in overlay save directory: $overlay_backup_dir"
+fi
+
+echo "Use ovlremove to prevent the overlay of this file after reboot"

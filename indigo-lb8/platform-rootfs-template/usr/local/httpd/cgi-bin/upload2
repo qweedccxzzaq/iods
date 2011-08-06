@@ -1,0 +1,73 @@
+#!/usr/local/bin/haserl --shell=lua -u 20000 -U /cf_card/tmp
+Content-type: text/html
+
+<!-- Copyright 2011 Big Switch Networks -->
+
+<% 
+   require "web_common"
+   require "ui_cs_op"
+   require "ui_utils"
+%>
+
+<html>
+<body>
+
+<%
+   if not FORM.dest or FORM.dest == "" then
+      print("<h2><font color=red>Must specify destination.</font></h2>")
+      os.exit(0)
+   end
+
+   local tmp_dir = "/cf_card/tmp"
+   local md5_file = "/tmp/upload.md5"
+   local tmp_file = tmp_dir .. '/' .. FORM.dest
+   local dest_file = '/cf_card/' .. FORM.dest
+
+   if ENV["REQUEST_METHOD"] == "POST" then
+      os.execute("rm -f " .. md5_file)
+      if FORM.up_mode == "tftp" then
+         if not FORM.tftp_src or FORM.tftp_src == "" then
+            FORM.tftp_src = FORM.dest
+         end
+         -- TODO Cleanse tftp_src
+         cmd = "cd "..tmp_dir .. " && tftp -r " .. FORM.tftp_src
+         cmd = cmd .. " -g " .. FORM.tftp_ip
+         rv = os.execute(cmd)
+         if rv == 0 and FORM.tftp_src ~= FORM.dest then
+            os.execute("mv ".. tmp_dir .. "/" .. FORM.tftp_src .. " " .. tmp_file)
+         end
+      else -- browser
+         -- Move to known image name
+         if not FORM.upfile then
+            print("<h2><font color=red>Upload file not specified.</font></h2>")
+            os.exit(0)
+         end
+         rv = os.execute("mv " .. FORM.upfile .. " " .. tmp_file)
+      end
+      if rv == 0 then
+         rv = os.execute("md5sum " .. tmp_file .. " > " .. md5_file)
+      end
+      if rv ~= 0 then
+         print("<h2><font color=red>Error uploading file.</font></h2>")
+      else
+         md5val = read_file(md5_file)
+         if not md5val then
+            print("<h2><font color=red>Error generating md5sum.</font></h2>")
+            print("<h2>Not overwriting existing ramdisk</h2>")
+         else
+            md5val = string.gsub(md5val, ' .*', '')
+            print("<h3><font color=green>Uploaded file with MD5: " .. 
+                  tostring(md5val) .. "</font></h3>")
+            -- Try to move existing image to backup
+            local new_filename = "/cf_card/tmp/" .. FORM.dest .. "-".. 
+               os.date("%d%b%y-%H-%M")
+            os.execute("mv ".. dest_file .. " " .. new_filename)
+            print("<p>Moved " .. dest_file .. " to " .. new_filename)
+            os.execute("mv " .. tmp_file .. " " .. dest_file)
+         end
+      end
+   end
+%>
+
+</body>
+</html>

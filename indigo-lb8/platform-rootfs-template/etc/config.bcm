@@ -1,0 +1,57 @@
+# config.bcm
+#
+# This configuration file contains variables used by the BCM CLI
+# and is read during initialization.  It is specific to the Pronto-3290
+# platform.
+
+# Uncomment for disabling automatic OpenFlow datapath execution from CLI
+#no_ofd=1
+pbmp_xport_xe.0=0x1fffffffffffe
+portmap_48=72:10
+portmap_47=71:10
+portmap_46=70:10
+portmap_45=69:10
+portmap_44=68:10
+portmap_43=67:10
+portmap_42=66:10
+portmap_41=65:10
+portmap_40=64:10
+portmap_39=63:10
+portmap_38=62:10
+portmap_37=61:10
+portmap_36=56:10
+portmap_35=55:10
+portmap_34=54:10
+portmap_33=53:10
+portmap_32=52:10
+portmap_31=51:10
+portmap_30=50:10
+portmap_29=49:10
+portmap_28=48:10
+portmap_27=47:10
+portmap_26=46:10
+portmap_25=45:10
+portmap_24=36:10
+portmap_23=35:10
+portmap_22=34:10
+portmap_21=33:10
+portmap_20=32:10
+portmap_19=31:10
+portmap_18=30:10
+portmap_17=29:10
+portmap_16=28:10
+portmap_15=27:10
+portmap_14=26:10
+portmap_13=25:10
+portmap_12=20:10
+portmap_11=19:10
+portmap_10=18:10
+portmap_9=17:10
+portmap_8=16:10
+portmap_7=15:10
+portmap_6=14:10
+portmap_5=13:10
+portmap_4=12:10
+portmap_3=11:10
+portmap_2=10:10
+portmap_1=9:10

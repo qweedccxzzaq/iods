@@ -1,0 +1,11 @@
+# config.bcm
+#
+# This configuration file contains variables used by the BCM CLI
+# and is read during initialization.  It is specific to the Pronto-3290
+# platform.
+
+# Set up 10-gig ports as ethernet
+pbmp_xport_xe.0=0x3c000000
+
+# Uncomment for disabling automatic OpenFlow datapath execution from CLI
+#no_ofd=1

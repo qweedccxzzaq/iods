@@ -1,0 +1,78 @@
+#!/bin/sh
+#
+# Script to check if we're updating
+#
+# Check if no ifcfg-<intf> in overlay; and if switch_ip or TAP0_IP or ETH0_IP
+# is in environment.  If so, create an ifcfg-<intf> for that intf.
+#
+
+source /etc/find-env
+
+if test -z "$vendor"; then
+    echo "Unknown vendor, skipping update"
+    exit 0
+fi
+
+tap0_cfg=$config_dir/overlay/etc/ifcfg-tap0
+eth0_cfg=$config_dir/overlay/etc/ifcfg-eth0
+eth1_cfg=$config_dir/overlay/etc/ifcfg-eth1
+interface=
+
+if test -f $tap0_cfg; then
+    # tap0 interface cfg exits
+    exit 0
+fi
+if test -z "$dhcp_config"; then
+    dhcp_config=disable
+fi
+
+if test "$vendor" == "ntgr"; then
+    if test -n "$switch_ip"; then
+        echo "Updating ifcfg-tap0"
+        ifcfg-gen tap0 $dhcp_config $switch_ip $netmask $gateway
+        exit 0
+    fi
+    if test -n "$TAP0_IP"; then
+        echo "Updating ifcfg-tap0"
+        ifcfg-gen tap0 $dhcp_config $TAP0_IP $netmask $gateway
+        exit 0
+    fi
+fi
+
+# Vendor is assumed to be Pronto herein (or at least something with ext'l intf
+
+if test -f $eth0_cfg; then
+    # eth0 interface cfg exits
+    exit 0
+fi
+
+if test -f $eth1_cfg; then
+    # eth1 interface cfg exits
+    exit 0
+fi
+
+# 
+if test -z "$switch_ip"; then
+    if test -n "$switchip"; then
+        switch_ip=$switchip
+    fi
+fi
+
+if test -n "$switch_ip"; then
+    interface=eth0
+    use_ip=$switch_ip
+elif test -n "$ETH0_IP"; then
+    interface=eth0
+    use_ip=$ETH0_IP
+elif test -n "$TAP0_IP"; then
+    interface=tap0
+    use_ip=$TAP0_IP
+elif test -n "$ETH1_IP"; then
+    interface=eth1
+    use_ip=$ETH1_IP
+fi
+
+if [ -n "$interface" ]; then
+    echo "Updating ifcfg-$interface"
+    ifcfg-gen $interface $dhcp_config $use_ip $netmask $gateway
+fi

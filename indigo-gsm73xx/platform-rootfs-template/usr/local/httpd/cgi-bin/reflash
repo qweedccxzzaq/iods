@@ -1,0 +1,117 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <title>GSM73xx Firmware Update</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+
+<%
+   -- Sorry, this one is kind of a mess
+   require("ui_utils")
+   if ENV["REQUEST_METHOD"] == "POST" then
+      
+      -- TODO Check form data
+      cmd_str = "cd /tmp && flashcp mtd0image /dev/mtd0"
+      rv = os.execute(cmd_str)
+      if rv ~= 0 then
+         pagecontent = "<h2><font color='red'>Error reflashing switch</font></h2>"
+      else
+         pagecontent = [[
+<h2><font color='green'>Firmware updated</font></h2>
+<h2><a href="reboot">Proceed to reboot page</a></h2>
+]]
+      end
+      
+   else -- Not posted yet; check md5sum
+      rv = os.execute("md5sum /tmp/mtd0image > /tmp/mtd0image.md5")
+      md5val = read_file("/tmp/mtd0image.md5")
+      if not md5val then
+         pagecontent = [[
+<h2>Could not generate md5sum of /tmp/mtd0image</h2>
+<p>No firmware image found.</p>
+<h2><a href="upload">Retry upload</a></h2>
+]]
+      else -- Okay, found file and got md5sum
+         md5val = string.gsub(md5val, ' .*', '')
+         pagecontent = [[
+<h2>Using the image in /tmp/mtd0image with md5sum
+]]
+         pagecontent = pagecontent .. tostring(md5val)
+         pagecontent = pagecontent .. [[
+</h2>
+<h2>Are you sure you want to reflash the switch?</h2>
+
+<p><form name="input" action="reflash" method="POST"><input class="red" type="submit" value="REFLASH SWITCH" />
+</form></p>
+
+<p><strong>This page will reload when the operation is complete.</strong></p>
+]]
+      end
+   end
+%>
+</head>
+
+<body>
+
+<div id="header">
+
+<% 
+   require "web_common"
+   print(top_matter)
+%>
+
+    <div id="menu">
+
+        <ul id="main">
+            <li id="m-system"><a href="settings"><span>System</span></a></li>
+            <li id="m-monitoring"><a href="portstats"><span>Monitoring</span></a></li>
+            <li id="m-maintenance" class="active"><a href="upload"><span>Maintenance</span></a></li>
+            <li id="m-help"><a href="help"><span>Help</span></a></li>
+        </ul>
+
+        <ul id="sub">
+            <li><a href="upload"><span>Upload</span></a></li>
+            <li class="active"><a href="reflash"><span>Reflash</span></a></li>
+            <li><a href="reboot"><span>Reboot</span></a></li>
+            <li><a href="restart"><span>Restart Processes</span></a></li>
+            <li class="last"><a href="integrity"><span>Integrity</span></a></li>
+        </ul>
+
+    </div>
+
+</div>
+
+<div id="container">
+
+    <div id="sidebar">
+
+        <ul>
+            <li class="active"><a href="reflash">Reflash</a></li>
+        </ul>
+
+    </div>
+
+    <div id="content">
+
+<% print(pagecontent) %>
+
+    </div>
+
+<div class="clearer"></div>
+<div id="btm"></div>
+</div>
+
+<div id="footer">
+
+    <p id="copyright">Copyright &copy; 1996-2011 Netgear &reg;</p>
+
+</div>
+
+</body>
+</html>

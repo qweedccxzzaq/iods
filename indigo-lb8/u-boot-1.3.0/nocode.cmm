@@ -1,0 +1,17 @@
+D.LOAD u-boot /nocode
+MAP.BOnChip 0xfff00000--0xffffffff
+y.spath += .\board\cds\quanta_lb9
+y.spath += .\board\cds\common
+y.spath += .\common
+y.spath += .\cpu\mpc85xx
+y.spath += .\drivers
+y.spath += .\lib_ppc
+y.spath += .\lib_generic
+
+
+
+
+
+
+
+

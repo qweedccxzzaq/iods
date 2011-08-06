@@ -1,0 +1,101 @@
+#!/bin/lua
+-- Copyright 2011 Big Switch Networks
+--
+-- CLI command: port
+
+require "ui_cs_op"
+require "ui_utils"
+require "cli_common"
+require "optparse"
+
+-- Print the HTML for table headings
+-- hdr_string is a string of | separated column headings
+local function table_start(hdr_string)
+   for i,v in ipairs(split(hdr_string, '|')) do
+      printf("%8s ", tostring(v))
+   end
+   printf("\n")
+end
+
+-- Set debug to non-nil to enable
+--local debug = 1
+local port_count = get_port_count()
+
+local opt_desc={usage=[[
+Show or get port settings
+    port 1     Show info for port 1
+    port 1-10  Show info for ports 1 to 10
+    port link  Show only ports with link
+    port 1 speed=10
+]],
+                version="1.0"}
+local op = OptionParser(opt_desc)
+op.add_option({"-l", "--link", action="store_true", dest="link", 
+               help="Only show ports with link"})
+
+op.add_option({"speed", action="store", dest="speed", 
+               help="Set the speed of the port"})
+op.add_option({"enable", action="store", dest="enable", 
+               help="Set the enable state of the port"})
+op.add_option({"autoneg", action="store", dest="autoneg", 
+               help="Set the auto negotiation state of the port"})
+op.add_option({"mtu", action="store", dest="mtu", 
+               help="Set the maximum transmission packet size of the port"})
+
+local options, args = op.parse_args()
+
+if debug then 
+   generic_show(options)
+   generic_show(args)
+end
+
+local low_port = 1
+local high_port = port_count
+
+if args[1] then
+   local low, high = args[1]:match('^(%d+)-(%d+)')
+   if low then low_port = low end
+   if high then
+      high_port = high
+   else
+      low = args[1]:match('^(%d+)$')
+      if low then 
+         low_port = low
+         high_port = low
+      end
+   end
+end
+
+if options.speed then 
+   print("Setting port characteristics is not implemented")
+else
+   -- TODO Add fields to select one port and change its settings
+   if port_count >= 0 then
+      table_start("Port|Enabled|Link|Speed|Autoneg|MTU|RX Pause|TX Pause")
+
+      -- Iterate over ports and report info
+      for i=low_port,high_port do
+         status,result,err_str = cs_port_get(i)
+         if status ~= CS_REST_OKAY then
+            print("Error getting information for port " .. tostring(i) .. "\n")
+         else
+            local port_info = result[1]
+            en = two_choice(port_info.enable, "no", "yes")
+            link = two_choice(port_info.link, "down", "up")
+            if not options.link or link == "up" then
+               printf("%8s %8s %8s %8s %8s %8s %8s %8s\n",
+                      tostring(i),
+                      en,
+                      link,
+                      tostring(port_info.speed),
+                      en_dis(port_info.autoneg),
+                      tostring(port_info.mtu),
+                      en_dis(port_info["rx_pause"]),
+                      en_dis(port_info["tx_pause"]))
+            end
+         end
+      end
+   else
+      print("No ports attached for this system")
+   end
+end

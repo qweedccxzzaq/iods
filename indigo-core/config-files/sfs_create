@@ -1,0 +1,13 @@
+#!/bin/sh
+#
+# Create an sfs compressed file system
+# Must be run in the parent of sfs
+#
+
+if test -d sfs; then
+    tar czf sfs.tgz sfs
+    sfsctl create sfs.tgz
+    rm sfs.tgz
+else
+    echo ERROR: No local sfs directory found
+fi

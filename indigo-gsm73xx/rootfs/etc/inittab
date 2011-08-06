@@ -1,0 +1,5 @@
+console::sysinit:/etc/init.d/rcS
+::ctrlaltdel:/sbin/reboot
+::shutdown:/bin/umount -a -r
+::restart:/sbin/init
+console::respawn:/bin/login

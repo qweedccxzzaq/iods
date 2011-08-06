@@ -1,0 +1,100 @@
+=Introduction=
+
+The initialization sequence of Indigo is complicated because it needs to support a number of different variations.  This includes configuration determined from the boot line arguments, keeping persistent configuration state in flash, supporting DHCP to identify switches and supporting NFS for the root file system, possibly with many switches accessing the same file system.
+
+To support persistent information on the Quanta boxes, the SFS file system may be created and stored on flash.  See the file SFS_usage.txt for details on using that system.  How the SFS is used in the init sequence is described below.
+
+The initialization is roughly divided into four sections:
+
+* Base board bringup: get the CPU and on-board devices running
+* System initialization: base networking, insert modules for communicating to the ASIC
+* System configuration: Per-switch specific configuration and set up files for the ASIC control software
+* ASIC bringup and configuration: Invoke the component that initializes the ASIC and starts the OpenFlow components
+
+=Initialization Components=
+
+The key components of the initialization are as follows.
+
+==/etc/rc.sh==
+This is the script run by Busybox during system bringup.  It brings up the core components of the system.
+*Configure loopback
+*Mount devices
+*Insert cpu, flash, etc modules
+*Extract the local configuration from flash if present
+*Find and call system_init
+
+==/<init_location>/system_init==
+Provides basic Linux configuration:
+*Configure network interfaces
+*Start telnet and ssh
+*Insert switch ASIC modules
+*Find and call system_config (unless configured not to)
+
+==/<init_location>/system_config==
+Bring up switch ASIC and start controller connection daemon
+*Create switch specific bringup directory
+*Find rc.soc script and install
+*Find config.bcm script and install
+*Invoke OF-BCM CLI in background which starts OpenFlow agent
+*Bring up TAP interface if configured
+*Start controller connection daemon if configured
+
+==/<init_location>/rc.soc==
+The script run by the OF-BCM CLI program when it is started.  This script is copied into the per-server directory before being run.
+* Initialize switch ASIC and start OpenFlow agent
+
+==/<init_location>/config.bcm==
+The set of configuration variables read by the OF-BCM CLI program when it is started.  This file is copied into the per-server directory before the software is run.
+* File containing configuration variables for switch ASIC driver and OpenFlow datapath agent
+
+In general, rc.sh should not be altered as it sets up the core drivers needed to make the system work at all.  However, each of the other files can be over ridden by putting versions in particular locations.  system_init and system_config are separated simply for the convenience that the first sets up the system so that the ASIC can run, but does not activate it, while the second activates the different components to bring the system up to being operational.
+
+=Finding the Initialization and Configuration Scripts=
+
+<init_location> is determined at run time by the following sequence of directories.  The first directory containing the target file is used.
+
+    /config/<device_ip_address>/
+    /config/default/
+    /client/<device_ip_address>/sfs/
+    /etc/
+
+The first two are meant to support NFS file systems where multiple switches are accessing the filesystem simultaneously.  The /config directory is used to provide per-client configuration directories.
+
+The default location for these files is in /etc.
+
+SFS is a simple file system that can be stored in flash to keep persistent configuration information.  If the boot argument $no_sfs is '''not''' set, it will be extracted into the per-client directory, normally /config/$DEV_ADDR and searched in the order listed above.  You can update system_init or system_config with hooks to access other files in this directory, for example, to apply patches or insert special kernel modules.  Space is currently limited to about 200KB.
+
+Once found, the target files are either directly sourced (system_init, system_config) or are copied into a per-client directory (rc.soc, config.bcm).  
+
+Execution of the ASIC control software is done in the per-client directory (so as to access the configuration files copied there) and logs are stored there.
+
+=Configuration Variables=
+
+TODO: Put these in a table: Name, meaning, data type, default value, where defined, where referenced.
+
+Some of these are less important now that the per-client configuration files are more flexible.  You can set the values in those and not worry about the boot arguments.
+
+* DEV_ADDR:     Identifier for switch; usually ETH0 or TAP0 IP address.  This is the key used to identify the client and client specific configuration files
+* ETH0_IP:      The IP address of eth0, usually used to contact the controller
+* ETH1_IP:      If set, bring up eth1 with this IP
+* TAP0_IP:      If set, configure tap0 after of-bcm-cli is brought up and add dp_mgmt to config.bcm
+* GATEWAY:      If set, set default gateway
+* no_sysconf:   If set, exit after inserting core system modules
+* no_ssh:       If set, do not start SSH daemon
+* no_sfs:       If set, do not attempt to extract the SFS directory from flash
+* start_telnet: If set, start telnetd
+* CONTROLLER:   If set, connect to controller on this IP
+* CTRL_PORT:    If set, use this port; optional
+* watchdog:     If set, add watchdog to config.bcm
+* dpid:         If set, add dpid setting to config.bcm
+
+
+=Other Initialization Files=
+
+Other files of interest that are currently not touched by the default configuration include:
+
+* /etc/passwd, /etc/shadow
+** The password and authentication files
+* /sshkey
+** The private key file for the SSH instance
+

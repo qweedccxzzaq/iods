@@ -1,0 +1,37 @@
+#!/bin/sh
+
+PATH=/bin:/sbin
+
+## prepare the hostname
+hostname GSM-73xx
+
+ARCH_PROFILE="/etc/profile"
+
+## prepare the chip-topo-config and port_num
+
+port_num=1
+chip_topo="/etc/platform/bcm.default"
+dev_desc="Unknow"
+
+if cat /proc/cpuinfo | grep "24G + 4XG" ; then
+chip_topo="/etc/platform/bcm.24g"
+port_num=24
+dev_desc="Kinnick 24 Port"
+fi
+
+if cat /proc/cpuinfo | grep "48G + 4XG" ; then
+chip_topo="/etc/platform/bcm.48g"
+port_num=48
+dev_desc="Kinnick 48 Port"
+fi
+
+echo "PORT_NUM=$port_num" >> $ARCH_PROFILE
+
+if [ -e $chip_topo ] ; then
+rm /etc/bcm.rc
+ln -s $chip_topo /etc/bcm.rc
+fi
+
+echo "$dev_desc" > /etc/dev_description
+
+

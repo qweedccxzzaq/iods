@@ -1,0 +1,14 @@
+#!/bin/sh
+#
+# Copyright 2011 Big Switch Networks
+#
+
+# Bring up out of band interfaces
+
+if test -e /etc/ifcfg-eth0; then
+    ifcfg.sh eth0
+fi
+
+if test -e /etc/ifcfg-eth1; then
+    ifcfg.sh eth1
+fi

@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Copyright 2011 Big Switch Networks
+#
+# Script to restart OpenFlow related daemons
+#
+echo "OpenFlow Switch Restart"
+echo "Killing protocol daemon"
+killall -q ofprotocol.sh
+killall -q ofprotocol
+echo "Killing switch daemon"
+killall -q ofswd.sh
+killall -q ofswd
+echo "Kill interface components"
+killall -q httpd
+killall -q dropbear
+killall -q telnetd
+killall -q dhcpc
+echo "Delaying restart for 5 seconds"
+sleep 5
+echo "Running system config"
+
+source /etc/find-env
+
+if test -e $sys_config_file; then
+    echo "System Init:  Running $sys_config_file"
+    source $sys_config_file
+else
+    echo "No system config file found; manual configuration required"
+    echo "End System Init"
+fi

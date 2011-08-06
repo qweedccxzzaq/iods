@@ -1,0 +1,52 @@
+SFS Notes, Version 1
+
+Overview
+
+    See README for an overview of SFS.
+
+SFS Host Configuration
+
+    SFS supports being built on a Linux server for testing.
+
+    If the environment variable CROSS_COMPILE is not set, the build
+    will be done on the host.  The resulting command image is called
+    sfsctl-test and is copied to the top level of the sfs source
+    directory.  Build directories for host and embedded targets are
+    maintained separately.
+
+    The flash system is mimicked by keeping a file _fake_flash in the
+    local directory.  This can be inspected with od or another utility
+    as needed.  All sfsctl commands work in this environment.
+
+Changing Parameters
+
+    Noting that backwards compatibility with existing file systems
+    will require significant changes to the code, you can change the
+    basic parameters by adjusting the following defines:
+
+    In sfs.h:
+
+        SFS_FILES_MAX:          Number of files in FS
+        SFS_FILENAME_MAX:       Length of filename
+
+    In sfs_host.h and/or sfs_lb4g.h:
+
+        SFS_DEFAULT_OFFSET:     Default location in flash of the SFS
+        SFS_ALLOC_BYTES:        Total size of an SFS in flash
+        SFS_FLASH_BYTES:        Total size of the flash system
+
+Porting to Different Flash
+
+    After adjusting the parameters above as necessary, you can add new
+    flash read and write routines by copying the format of
+    lb4g_flash_read/write or fake_flash_read/write and calling
+    sfs_config with those routines.
+
+Internals
+
+    There is a header with a 32-bit CRC that contains the file control
+    blocks as a fixed array.  Each file control block contains a CRC
+    for the file data, an offset in to the filesystem and a length.
+    Lengths should be 16-byte aligned.
+
+

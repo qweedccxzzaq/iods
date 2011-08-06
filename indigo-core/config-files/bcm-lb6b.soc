@@ -1,0 +1,43 @@
+#
+# Simple rc.soc file for Stanford-LB4G indigo binary release
+#
+
+echo "rc: unit $unit"
+
+counter off
+linkscan off
+l2mode off
+echo "rc: Initializing device"
+init soc
+init misc
+init mmu
+init bcm
+echo "rc: Set up device"
+l2mode interval=3000000
+linkscan 250000
+echo "rc: Set up ports"
+port e linkscan=on autoneg=on speed=0 fullduplex=true txpause=true rxpause=true
+port st linkscan=on txpause=false rxpause=false
+port xe linkscan=on autoneg=off speed=10000 fullduplex=true txpause=true \
+    rxpause=true
+stg stp 1 all forward
+counter sync
+#led prog $ledcode
+#if !"expr $unit == $units - 1" \
+#    "*:led stop; *:led start"
+echo "rc: unit $unit complete"
+
+# Set command line
+if $?ofd_params "" else \
+    "setenv ofd_params '--interfaces=1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,\
+16,17,18,19,20 ptcp:'"
+
+# Run ofdatapath
+if $?no_ofd \
+    "echo OpenFlow datapath startup disabled" \
+    exit
+
+# Start up OpenFlow datapath:  DOES NOT RETURN
+echo Starting OpenFlow datapath: ofd $ofd_params
+ofd $ofd_params
+

@@ -1,0 +1,4 @@
+#!/bin/sh
+(export LUA_PATH=';;ROOTFS_PATH/usr/local/lib/lua/5.1/?.lua' && \
+cd ROOTFS_PATH/usr/local/switch_cli && stty -echo && \
+stty erase  && stty raw && lua cli.lua)

@@ -1,0 +1,125 @@
+/*
+ *  Indigo CSS
+ *  (c) 2011 Big Switch Networks, all rights reserved
+ *
+ *  What goes in here and where:
+ *  - Only global styles go in here
+ *
+ *  Ordering here is global styles first, elements next, page-specific things last.
+ */
+
+/*  Global Style and Base Template
+ * --------------------------------------------------------------------------------------------------------------
+ */
+  
+body {
+    margin: 0px;
+    background-image: url(../img/ind-hdr.png);
+    background-repeat: repeat-x;
+/*  background-color: #174567; */
+    background-color: #EEE;
+    height: 100%;
+}
+
+ul#icons {margin: 0; padding: 0;}
+ul#icons li {margin: 2px; position: relative; padding: 4px 0; cursor: pointer; float: left;  list-style: none;}
+ul#icons span.ui-icon {float: left; margin: 0 4px;}
+
+#content {     
+    width: 1024px;
+    min-height: 800px;
+    background-color: white;
+    border-width: 1px;
+    border-color: #58a;
+    border-style: solid;
+    margin-top: 20px;
+    margin-left: auto ;
+    margin-right: auto ;
+    padding: 15px;
+    font: 75% "Trebuchet MS", sans-serif; 
+}
+
+.ui-widget {
+    font-size: 1em;
+}
+
+/*  Elements
+ * --------------------------------------------------------------------------------------------------------------
+ */
+ 
+/* Simple datatable, if the full datatable with themeroller is too much... */
+
+div.simple-dt .dataTables_length {
+    font-size: 90%;
+    display: inline;
+    float: left;
+    width: 50%;
+}
+
+
+div.simple-dt .dataTables_filter {
+    font-size: 90%;
+    display: inline;
+    float: left;
+    text-align: right;
+    width: 50%;
+}
+
+/*  Main Page
+ * --------------------------------------------------------------------------------------------------------------
+ */
+
+#base-appmenu-td {
+    height: 800px;
+    width: 180px;
+    padding-right: 5px;
+}
+
+#base-appmenu-td .ui-accordion-content {
+    font-size: 85%;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+    padding-right: 1em;
+    padding-left: 1em;
+}
+
+#base-appmenu-td .ui-accordion-content p {
+    padding: 0em;
+    margin: 0em;
+}
+
+#base-vline-td {
+    width: 1px;
+    margin: 0px;
+    padding: 0px;
+    background-color: #EEE;
+}
+
+#base-appmenu-td {
+    height: 800px;
+    width: 180px;
+    padding-right: 5px;
+}
+
+.coreui-base-tablabel.ui-state-active {
+    background-color: #fff;
+    background-image: none;
+}
+
+/*  Dashboard Page
+ * --------------------------------------------------------------------------------------------------------------
+ */
+
+
+.d-column { 
+    width: 512px; 
+    float: left; 
+    padding-bottom: 100px; 
+}
+
+.d-portlet { margin: 0 1em 1em 0; }
+.d-portlet-header { margin: 0.3em; padding-bottom: 4px; padding-left: 0.2em; }
+.d-portlet-header .ui-icon { float: right; }
+.d-portlet-content { padding: 0.4em; }
+.ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 50px !important; }
+.ui-sortable-placeholder * { visibility: hidden; }

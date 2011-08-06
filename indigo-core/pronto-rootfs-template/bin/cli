@@ -1,0 +1,3 @@
+#!/bin/sh
+(stty -echo erase  raw && cd /usr/local/cli && lua cli.lua)
+stty echo -raw

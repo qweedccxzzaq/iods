@@ -1,0 +1,3 @@
+0x00000000	MarkScatterBuffer	../driver/t23xDrv/t23xsec2/t23xsec2	EXPORT_SYMBOL
+0x00000000	SEC2_ioctl	../driver/t23xDrv/t23xsec2/t23xsec2	EXPORT_SYMBOL
+0x00000000	SEC2xIoctl	../driver/t23xDrv/t23xsec2/t23xsec2	EXPORT_SYMBOL

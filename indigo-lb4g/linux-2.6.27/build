@@ -1,0 +1,6 @@
+#!/bin/sh
+
+export ARCH=powerpc
+export PATH=/home/ELDK_4.2/bin:/home/ELDK_4.2/usr/bin:$PATH
+
+make CROSS_COMPILE=ppc_85xx- -e $*

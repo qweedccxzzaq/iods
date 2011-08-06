@@ -1,0 +1,106 @@
+#
+# Simple rc.soc file for Stanford-LB4G indigo binary release
+#
+
+echo "rc: unit $unit"
+
+# Led program for new rev of 5651x SDK and Ref design
+# local ledcode '\
+#  E0 28 60 E3 67 4B 67 87 06 E3 80 D2 18 74 01 28 \
+#  60 E3 67 AF 75 1C 67 C4 67 4B 77 24 32 0E 87 32 \
+#  08 87 67 B6 06 E3 80 D2 1C 74 0F 12 E2 85 05 D2 \
+#  0F 71 35 52 00 12 E1 85 05 D2 1F 71 3F 52 00 12 \
+#  E0 85 05 D2 05 71 49 52 00 3A 70 32 00 97 75 57 \
+#  12 A0 FE E3 02 0A 50 32 01 97 75 63 12 BC FE E3 \
+#  02 0A 50 12 BC FE E3 95 75 75 85 12 A0 FE E3 95 \
+#  75 C4 85 77 B6 12 A0 FE E3 95 75 7F 85 77 BD 16 \
+#  E0 DA 02 71 BD 77 C4 32 05 97 71 97 32 02 97 71 \
+#  B6 06 E1 D2 01 71 B6 06 E3 67 AF 75 B6 32 03 97 \
+#  71 C4 32 04 97 75 BD 06 E2 D2 07 71 BD 77 C4 12 \
+#  80 F8 15 1A 00 57 32 0E 87 32 0E 87 57 32 0E 87 \
+#  32 0F 87 57 32 0F 87 32 0E 87 57'
+
+# Led program from Quanta
+local ledcode '\
+    02 1B 28 60 C0 67 0E 90 \
+    D2 19 74 02 3A 08 12 80 \
+    F8 15 1A 00 75 27 32 08 \
+    D7 87 32 00 D7 87 32 01 \
+    D7 87 32 0F D7 87 57 32 \
+    08 D7 87 32 0E D7 87 32 \
+    0E D7 87 32 0E D7 87 57 \
+    00 00 00 00 00 00 00 00'
+
+counter off
+linkscan off
+l2mode off
+echo "rc: Initializing device"
+init soc
+init misc
+init mmu
+init bcm
+echo "rc: Set up device"
+#l2mode interval=3000000
+linkscan 250000
+echo "rc: Set up ports"
+port e linkscan=on autoneg=on speed=0 fullduplex=true txpause=true rxpause=true
+port st linkscan=on txpause=false rxpause=false
+port xe linkscan=on autoneg=off speed=10000 fullduplex=true txpause=true \
+    rxpause=true
+stg stp 1 all forward
+# Check if ports should be set to enabled or not
+if $?init_port_state && !"expr $init_port_state == 0" \
+  "port e enable=0" else \
+  "port e enable=1"
+counter sync
+led prog $ledcode
+if !"expr $unit == $units - 1" \
+    "*:led stop; *:led start"
+echo "rc: unit $unit complete"
+
+#
+# Command line options for openflowd from config.bcm
+#    watchdog   Turn on unresponsive auto reset
+#    dp_mgmt    Allow connection to controller from dataplane ports
+#    dpid       Set the datapath ID
+#
+
+if $?watchdog "setenv wd_arg '--watchdog'" else "setenv wd_arg ''"
+if $?dp_mgmt "setenv dp_mgmt_arg '--dp-mgmt'" else "setenv dp_mgmt_arg ''"
+
+setenv desc_arg '--dp_desc="indigo-1.0-lb4g"'
+
+# Use DPID for datapath id if specified
+setenv dpid_arg ""
+if $?dpid "setenv dpid_arg '-d $dpid'"
+
+setenv dflt_portlist 1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,\
+16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,\
+40,41,42,43,44,45,46,47,48,49,50,51,52
+
+if $?portlist "setenv ifarg --interfaces=$portlist" else \
+    "setenv ifarg --interfaces=$dflt_portlist"
+
+setenv aps_arg "--add-port-state=1"
+if $?add_port_state "setenv aps_arg --add-port-state=$add_port_state"
+
+if $?ofd_params "" else \
+    "setenv ofd_params '$dpid_arg $wd_arg $desc_arg $dp_mgmt_arg \
+    $ifarg $aps_arg ptcp:'"
+
+# When unit 1 has been initialized, run ofdatapath
+if !"expr $unit == $units - 1" \
+    'if $?no_ofd \
+        "echo OpenFlow datapath startup disabled" \
+        exit'
+
+# Start up OpenFlow datapath
+if !"expr $unit == $units - 1" \
+    "echo Starting OpenFlow datapath: ofd $ofd_params" \
+    "bg 'ofd $ofd_params'"
+
+# Start up Command Server; should not return
+if !"expr $unit == $units - 1" \
+    "echo Starting Command Server: cmdsrv" \
+    "cmdsrv"
+

@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# Default system initialization file for the LB4G
+#
+# See rc.sh and README-config for more information
+#
+
+source /etc/find-env
+
+# Bring up eth0 and eth1
+
+if test -n "$ETH0_IP"; then
+    echo "Bringing up eth0 at $ETH0_IP"
+    /sbin/ifconfig eth0 $ETH0_IP
+fi
+
+if test -n "$ETH1_IP"; then
+    echo "Bringing up eth1 at $ETH1_IP"
+    /sbin/ifconfig eth1 $ETH1_IP
+fi
+
+# Start up telnet if so directed
+if test -n "$start_telnet" ; then 
+    echo "Starting Telnet"
+    telnetd
+fi
+
+# Start up SSH if available
+if test -z "$no_ssh"; then 
+    if test -e /bin/dropbear; then
+        echo "Starting SSH"
+        /bin/dropbear
+    else
+        echo "SSH dropbear not found"
+    fi
+fi
+
+# Install a default gateway (add netmask if needed)
+if test -n "$GATEWAY"; then
+    echo "Adding gateway"
+    route add default gw $GATEWAY
+fi
+
+echo "Installing user-kernel communication drivers"
+insmod /lib/modules/linux-kernel-bde.ko
+insmod /lib/modules/linux-user-bde.ko
+
+# Check if environment "no_sysconf" set from boot args
+if test -n "$no_sysconf" ; then 
+    echo "no_sysconf is set.  Manual configuration required.  Exiting."
+    exit 0
+fi
+
+if test -e $sys_config_file; then
+    echo "System Init:  Running $sys_config_file"
+    source $sys_config_file
+else
+    echo "No system config file found; manual configuration required"
+    echo "End System Init"
+fi

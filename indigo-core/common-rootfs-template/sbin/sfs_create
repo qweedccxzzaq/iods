@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Create an sfs compressed file system
+# Must be run in the parent of the sfs directory to be saved
+#
+
+if test ! -x /sbin/sfsctl; then
+    echo "ERROR:  No sfsctl found"
+    exit 1
+fi
+
+if test -d sfs; then
+    tar czf sfs.tgz sfs/*
+    sfsctl create sfs.tgz
+    # Fixme:  Report an error if the sfsctl fails
+    rm sfs.tgz
+else
+    echo ERROR: No local sfs directory found
+fi

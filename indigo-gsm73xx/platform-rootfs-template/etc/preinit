@@ -1,0 +1,82 @@
+#!/bin/sh
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin
+
+# mount the proc filesystem
+mount -t proc none /proc
+
+# mount var tmp director
+mount -t tmpfs none /var
+mount -t tmpfs none /tmp
+mount -t tmpfs none /dev
+mount -t tmpfs none /local
+
+# prepare the utmp
+mkdir -p /var/run /var/log
+touch /var/run/utmp
+touch /var/log/lastlog
+touch /var/log/wtmp
+
+# FIXME : the rootfs is readonly system, but all the 
+# dynamic config file is placed in /etc. we have to
+# redirect the access operation to rw place.
+#mkdir /tmp/.etc 
+#cp -a /etc/* /tmp/.etc
+#mount -o bind /tmp/.etc /etc
+
+mkdir -p /dev/pts /dev/shm
+mount -t devpts none /dev/pts
+
+
+# prepare device file
+mknod /dev/tty     c 5 0
+##mknod /dev/console c 5 1
+## Note : the manage console map to ttyS0 always.
+ln -s /dev/ttyS0 /dev/console
+mknod /dev/ptmx    c 5 2
+mknod /dev/null    c 1 3
+mknod /dev/random  c 1 8
+mknod /dev/urandom c 1 9
+mknod /dev/mem     c 1 1
+
+## MTD
+for a in `seq 0 9` ; do
+	mknod /dev/mtd$a c 90 `expr $a + $a`
+	mknod /dev/mtdblock$a b 31 $a
+done
+
+## Serial
+for a in `seq 0 3` ; do
+	mknod /dev/ttyS$a c 4 `expr 64 + $a`
+done
+
+# Try to mount the sysfs. and enable hotplug
+support_sysfs=$(grep "sysfs" /proc/filesystems)
+[ ! -z "$support_sysfs" ] && {
+	mount -t sysfs none /sys
+	echo "/bin/mdev" > /proc/sys/kernel/hotplug
+	mdev -s
+}
+
+## prepare the core dump
+ulimit -c unlimited
+mkdir -p /tmp/dump
+echo "/tmp/dump/%e.%p" > /proc/sys/kernel/core_pattern
+
+M0=/dev/ptmx
+M1=/dev/ptmx
+
+# the shell really doesn't like having stdin/out closed
+# that's why we use /dev/pty/m0 and m1 as replacement
+# for /dev/console if there's no serial console available
+dd if=/dev/console of=/dev/null bs=1 count=0 >/dev/null 2>/dev/null && {
+	M0=/dev/console
+	M1=/dev/console
+}
+
+exec <$M0 >$M1 2>&0
+
+echo "Completed preinit"
+echo "Starting init"
+	
+exec /sbin/init

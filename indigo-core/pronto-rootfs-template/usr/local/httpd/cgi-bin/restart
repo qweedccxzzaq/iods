@@ -1,0 +1,54 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!-- Copyright 2011 Big Switch Networks -->
+
+<% 
+   require "web_common"
+   require "ui_cs_op"
+   require "ui_utils"
+%>
+
+<html>
+<head>
+    <% print(common_includes) %>
+	<script type="text/javascript">
+	  $(document).ready(function(){
+        $('#restart_form').ajaxForm({target: '#restart_content'});
+	  });
+	</script>
+</head>
+
+<body>
+<div id="restart_content">
+
+<%
+   if ENV["REQUEST_METHOD"] == "POST" then
+      rv = os.execute("ofrestart")
+      if rv == 0 then
+         pagecontent = "<h2>Restarted OpenFlow processes</h2>"
+      else
+         pagecontent = "<h2>Error restarting OpenFlow processes</h2>"
+      end
+   else
+      pagecontent = [[
+<h2>Are you sure you want to restart the OpenFlow processes?</h2>
+<br>
+<style type=text/css>
+input.red {background-color: #cc0000; font-weight: bold; font-size: 12px; color: white;}
+</style>
+
+<br>
+<form name="input" action="/cgi-bin/restart" method="POST" id="restart_form">
+<input class="red" type="submit" value="Restart OpenFlow" />
+</form>
+]]
+   end
+
+   print(pagecontent)
+
+%>
+
+</div>
+
+</body>

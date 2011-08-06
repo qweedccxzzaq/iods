@@ -1,0 +1,95 @@
+#!/bin/lua
+-- Copyright 2011 Big Switch Networks
+--
+-- CLI command: config
+--
+-- TODO support -f flag to force setting
+
+require "ui_cs_op"
+require "ui_utils"
+require "ui_config"
+require "cli_common"
+require "optparse"
+
+-- set to non-nil for debugging
+local debug=1
+
+local opt_desc={usage=[[
+Show or modify saved configuration parameters.  
+    config var value
+    config var=value
+    config
+    config show
+Changes are immediately saved but are not applied until the
+next reboot.  Only one variable may be set at a time.
+]],
+--Currently only the saved configuration parameters can be 
+--updated with the exception of log level.  Changes to log 
+--level are applied immediately.  Other changes currently 
+--require a reboot to take effect.]],
+                version="1.0"}
+local op = OptionParser(opt_desc)
+op.add_option({"-f", "--force", action="store_true", dest="force", 
+               help="Force setting variable ignoring name and validation"})
+op.add_option({"show", action="store_true", dest="show", 
+               help="Show variables (default)"})
+op.add_option({"-d", "--delete",action="store_true", dest="delete", 
+               help="Delete a variable"})
+
+--op.add_option({"save", action="store_true", dest="save", 
+--               help="Save the current configuration"})
+local options, args = op.parse_args()
+
+if debug then
+   generic_show(options)
+   generic_show(args)
+end
+
+-- Currently just show config parameters
+local set_var = false
+local config = {}
+config_read(config)
+
+if #args == 0 then
+   generic_show(config)
+elseif #args == 1 then
+   -- check for a=b in argument 1
+   local var, val = args[1]:match('^(%w+)=(.*)')
+   if var then
+      args[1] = var
+      table.insert(args, 2, val)
+      if debug then generic_show(args) end
+      set_var = true
+   else -- Just one plain argument
+      if options.delete then
+         if config[args[1]] then
+            config[args[1]] = nil
+            config_save(config)
+         else
+            printf("Variable '%s' not found in configuration\n", args[1])
+         end
+      else -- Show the variable
+         if config[args[1]] then
+            printf("%s: %s\n", args[1], config[args[1]])
+         else
+            printf("Variable '%s' not found in configuration\n", args[1])
+         end
+      end
+   end
+elseif #args == 2 then
+   set_var = true
+else
+   print("Too many arguments.  Try --help")
+end
+
+if set_var then
+   if options.force then
+      if debug then printf("Force set %s to %s\n", args[1], args[2]) end
+      config[args[1]] = args[2]
+      config_save(config)
+   else
+      print("Variable validation to be implemented. Blindly setting")
+      config[args[1]] = args[2]
+      config_save(config)
+   end
+end

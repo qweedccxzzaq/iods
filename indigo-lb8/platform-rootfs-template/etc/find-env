@@ -1,0 +1,91 @@
+#!/bin/sh
+#
+# Copyright 2011, Big Switch Networks
+#
+# Shell script fragment to be sourced to pick up client environment 
+# variables. idempotent:  Source it as many times as you like.
+#
+# Simplification:
+#
+# This should always live in /etc/find-env
+#
+# Defines the following
+#    client_root:  Default is /cf_card/local for 3290
+#
+#    sys_init_file
+#    sys_config_file
+#    client_rc_soc
+#    client_config_bcm
+#
+# These are searched for in the following order:
+#    $client_root; /etc
+#
+# The file sysenv is searched for in the same locations and sourced 
+# if found.  It should only contain export statements as it is parsed
+# by the UI libraries
+#
+
+verbose=0
+
+# Need to get the global environment from process with PID 1
+if test $PPID != 1; then
+    for line in `(cat /proc/1/environ; echo) | tr "\000" "\n"`; do
+        export $line
+    done
+fi
+
+# To use NFS with persistent configuration storage, the best option is:
+#   Define $client_root to be a per-switch directory on the shared filesystem
+#
+
+# Default client root is /cf_card/local
+if test -z "$client_root"; then
+    export client_root=/cf_card/local
+fi
+
+# Find system_init file
+sys_init_file=/etc/system_init #default
+if test -e $client_root/system_init; then
+    sys_init_file=$client_root/system_init
+fi
+
+# Find system_config file
+sys_config_file=/etc/system_config
+if test -e $client_root/system_config; then
+    sys_config_file=$client_root/system_config
+fi
+
+# Find rc.soc file
+export client_rc_soc=/etc/rc.soc
+if test -e $client_root/rc.soc; then
+    export client_rc_soc=$client_root/rc.soc
+fi
+
+# Find config.bcm file
+export client_config_bcm=/etc/config.bcm
+if test -e $client_root/config.bcm; then
+    export client_config_bcm=$client_root/config.bcm
+fi
+
+# Look for sysenv file
+if test -e $client_root/sysenv; then
+    source $client_root/sysenv
+elif test -e /etc/sysenv; then
+    source /etc/sysenv
+fi
+
+# Set up log directory
+export log_dir=$client_root/logs
+mkdir -p $log_dir
+
+if test -z "$system_ref"; then
+    [ $verbose = 1 ] && echo "find-env: System name (system_ref) is not defined"
+else
+    [ $verbose = 1 ] && echo "find-env: system_ref $system_ref"
+fi
+
+[ $verbose = 1 ] && echo "find-env: cli root $client_root"
+[ $verbose = 1 ] && echo "find-env: sys_init_file $sys_init_file"
+[ $verbose = 1 ] && echo "find-env: sys_config_file $sys_config_file"
+[ $verbose = 1 ] && echo "find-env: client_rc_soc $client_rc_soc"
+[ $verbose = 1 ] && echo "find-env: client_config_bcm $client_config_bcm"

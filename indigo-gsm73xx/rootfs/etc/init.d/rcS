@@ -1,0 +1,32 @@
+#!/bin/sh
+
+PATH=/bin:/sbin
+
+# bring up loopback net-dev
+ifconfig lo 127.0.0.1
+
+# capture the INT signal(SIGINT), if user press ctrl+c
+# cancel the init-script 
+trap "exit" 2
+
+echo ""
+echo "Starting Auto-Init-tools ..."
+echo "Press ctrl+c to cancel the auto-init...(5s)"
+sleep 5
+
+trap 2
+
+# execute the module init scripts
+init_list=$(ls /etc/init.d/S???*)
+for i in $init_list
+do
+	### echo "rcS execute $i"
+	$i
+done
+
+# if the auto-Init-tools isn't interrup.
+# mark the system have startup complete.
+# else 
+# means the system have been put in debug mode.
+touch /tmp/.sysok
+

@@ -1,0 +1,121 @@
+#
+# rc.soc file for GSM73XX platforms
+#
+
+echo "rc: unit $unit"
+
+# Led program for 73xx; should work for both platforms
+
+local ledcode '\
+E0 28 60 E3 67 45 67 62 67 2F 67 3A 06 E3 80 D2 \
+18 74 01 02 1B 28 60 E3 67 45 67 62 06 E3 90 D2 \
+17 74 15 12 E0 85 05 D2 05 71 2D 52 00 3A 68 67 \
+5E 75 62 32 04 97 75 62 77 66 67 5E 75 62 32 03 \
+97 75 62 77 66 32 00 97 71 56 32 01 97 71 56 32 \
+08 97 75 62 77 66 16 E0 DA 02 74 62 77 66 32 08 \
+97 57 32 0F 87 57 32 0E 87 57 57 00 00'
+
+# Old Code
+#E0 28 60 E3 67 65 67 5B 67 A5 67 45 67 50 06 E3 \
+#80 D2 18 74 01 28 60 E3 67 65 67 5B 67 A5 06 E3 \
+#80 D2 1C 74 15 12 E2 85 05 D2 0F 71 2F 52 00 12 \
+#E1 85 05 D2 1F 71 39 52 00 12 E0 85 05 D2 05 71 \
+#43 52 00 3A 68 67 A1 75 A5 32 04 97 75 A5 77 A9 \
+#67 A1 75 A5 32 03 97 75 A5 77 A9 12 80 F8 15 1A \
+#00 75 A5 77 A9 32 00 97 75 71 12 A0 FE E3 02 0A \
+#50 32 01 97 75 7D 12 BC FE E3 02 0A 50 12 BC FE \
+#E3 95 75 8F 85 12 A0 FE E3 95 75 AD 85 77 AD 12 \
+#A0 FE E3 95 75 99 85 77 AD 16 E0 DA 02 71 AD 77 \
+#AD 32 08 97 57 32 0F 87 57 32 0E 87 57 57 00 00'
+
+counter off
+linkscan off
+l2mode off
+echo "rc: Initializing device"
+init soc
+init misc
+init mmu
+init bcm
+echo "rc: Set up device"
+#l2mode interval=3000000
+linkscan 250000
+echo "rc: Set up ports"
+port e linkscan=on autoneg=on speed=0 fullduplex=true txpause=true rxpause=true
+
+# Is this a 7352?
+if !"expr $units == 2" "setenv is7352 1"
+if $?is7352 "config add port_phy_addr_hg1.0=0x40"
+
+# On 7328, all 10-gig ports are XE (not HG)
+if $?is7352 "" else "port hg encap=ieee"
+
+# On 7352, set up proper HG/XE ports
+if !"expr $unit == 0" "setenv xe_ports 25,26" else "setenv xe_ports 27,28"
+if !"expr $unit == 0" "setenv hg_ports 27,28" else "setenv hg_ports 25,26"
+if $?is7352 "port $xe_ports encap=ieee"
+
+# Setting up XE ports
+port xe linkscan=on autoneg=off speed=10000 fullduplex=true txpause=true \
+    rxpause=true
+
+# If on 7352, set HG parameters for proper ports
+setenv hg_params "linkscan=on txpause=false rxpause=false"
+if $?is7352 "port $hg_ports $hg_params"
+
+stg stp 1 all forward
+counter sync
+led auto on
+led prog $ledcode
+if !"expr $unit == $units - 1" \
+    "*:led stop; *:led start"
+echo "base rc: unit $unit complete"
+
+#
+# Command line options for openflowd from config.bcm
+#    watchdog   Turn on unresponsive auto reset
+#    dp_mgmt    Allow connection to controller from dataplane ports
+#    dp_mgmt_mac  Allow connection to controller from dataplane ports
+#    dpid       Set the datapath ID
+#
+
+if $?watchdog "setenv wd_arg '--watchdog'" else "setenv wd_arg ''"
+
+# dp_mgmt is required on this platform
+setenv dp_mgmt_arg '--dp-mgmt'
+if $?dp_mgmt_oob "setenv dp_mgmt_arg '--dp-mgmt-oob'"
+if $?dp_mgmt_port "setenv dp_mgmt_arg '$dp_mgmt_arg --dp-mgmt-port=$dp_mgmt_port'"
+if $?dp_mgmt_vid "setenv dp_mgmt_arg '$dp_mgmt_arg --dp-mgmt-vid=$dp_mgmt_vid'"
+
+setenv desc_arg '--dp_desc="__INDIGO_REL_NAME__"'
+
+# Use DPID for datapath id if specified
+setenv dpid_arg ""
+if $?dpid "setenv dpid_arg '-d $dpid'"
+
+setenv mgmt_mac_arg ""
+if $?dp_mgmt_mac "setenv mgmt_mac_arg '-e $dp_mgmt_mac'"
+
+setenv max_port 26
+if $?is7352 "setenv max_port 50"
+setenv if_arg "-M $max_port"
+
+if $?ofd_params "" else \
+    "setenv ofd_params '$mgmt_mac_arg $dpid_arg $wd_arg $dp_mgmt_arg \
+        $wd_arg $if_arg ptcp:'"
+
+# When unit 1 has been initialized, run ofdatapath
+if !"expr $unit == $units - 1" \
+    'if $?no_ofd \
+        "echo OpenFlow datapath startup disabled" \
+        exit'
+
+# Start up OpenFlow datapath
+if !"expr $unit == $units - 1" \
+    "echo Starting OpenFlow datapath: ofd $ofd_params" \
+    "bg 'ofd $ofd_params'"
+
+# Start up Command Server; should not return
+if !"expr $unit == $units - 1" \
+    "echo Starting Command Server: cmdsrv" \
+    "cmdsrv"
+

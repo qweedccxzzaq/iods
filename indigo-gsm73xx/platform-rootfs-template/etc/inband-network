@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# Configure inband network
+# Assumes inband datapath is alive
+#
+
+ifcfg.sh tap0

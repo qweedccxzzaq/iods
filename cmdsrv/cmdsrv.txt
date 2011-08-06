@@ -1,0 +1,215 @@
+Outline of Command Server Module
+
+The Command Server provides an API for control of and access to the
+switch driver and OpenFlow module.  The server is integrated with
+the switch hardware driver and will be given its own thread context.
+It will listen on a socket for connections.  Each connection handles
+one transaction.
+
+A REST architecture is defined with JSON providing the format for 
+encoded data.
+
+All requests receive a response.  JSON data may be encoded in one or 
+both of the request and response.
+
+Below "integer string" is a string composed of the characters 0-9.  
+Saying it represents something means the encoded integer represents 
+that value.
+
+All strings mentioned below are "space terminated" meaning that a
+they will be followed by a space character.
+
+All requests and responses have the same format for the REST header:
+
+  OP:URI:Transaction ID:Status Code:JSON Length:JSON data
+
+* OP is a string indicating the rest operation (PUT/GET/PST/DEL).  
+* URI is a string identifying the resource as described below.  
+* Transaction ID is an integer string.  It is ignore by the REST
+processing.
+* Status Code is an integer string which conforms to the conventions
+for HTTP status codes, for example
+  http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html 
+This is ignored for requests.
+* JSON Length is an integer string representing the number of bytes
+in the JSON encoded segment that follows.  [TBD:  May support -1
+meaning deduce the length from the JSON data]
+
+The JSON data may include an "error string" entry in the response if 
+the Status Code is not 200.  The JSON data should be NULL terminated.
+
+Note that multiple responses may be generated from a single request.
+The end of the response is signaled by the server closing the socket.
+
+Supported Operations
+
+The following operations are supported.
+
+    echo:                        Echo the packet's contents back
+    port_config_set/get:         Set/get port configuration parameters
+    port_statistics_get:         Get port statistics
+    flow_table_entry_get:        Get flow entries matching a description
+    flow_table_get:              Get all entries in the flow table
+    management_statistics_get:   Get management related statistics
+    controller_status_get:       Get the status of the controller connection
+    logging_level_set/get:       Set/get the logging level
+    fail_mechanism_open_set:     Set the fail mechanism to open
+    fail_mechanism_closed_set:   Set the fail mechanism to closed
+    fail_mechanism_get:          Get the current fail mechanism
+
+API Description
+
+This section gives the URIs accepted by the command server.
+The following URIs will be used.
+
+1. Port Characteristics:
+   Get: GET /cs/1.0/port
+   Set: PUT /cs/1.0/port
+
+Parameters accepted by PUT requests (all parameters except port 
+are optional):
+  "port"     : number   # The OpenFlow port number (required)
+  "speed"    : number   # Speed in Mbps
+  "mtu"      : number   # Maximum transmission unit in octets
+  "autoneg"  : boolean  # State of autonegotiation
+  "enable"   : boolean  # Administrative state of port
+  "rx pause" : boolean  # State of RX pause enable
+  "tx pause" : boolean  # State of TX pause enable
+
+The port number must be specified in the parameters
+
+Parameters returned by GET operation include all parameters listed 
+in the PUT operation and additionally:
+  "link"     : boolean  # The current link state of the port
+
+2. Port Statistics
+  Get:  GET /cs/1.0/portstats/
+
+Parameters accepted by GET request:
+  "port"      : number   # The OpenFlow port number (required)
+
+Parameters returned by GET response:
+  "port"        : number   # The OpenFlow port number
+  "tx bytes"    : string
+  "rx bytes"    : string
+  "tx packets"  : string
+  "rx packets   : string
+  "tx errors"   : string
+  "rx errors"   : string
+
+Note that 64-bit values are passed as strings due to JSON's 
+integer treatment.
+
+3. Flow Table Entry
+  Get:  GET /cs/1.0/flowtableentry
+
+Parameters accepted by GET requests represent the criteria for matching
+flow entries.
+
+The following are elements of match:
+  "in_port"       : number
+  "dl_src"        : string
+  "dl_dst"        : string
+  "dl_vlan"       : number
+  "dl_vlan_pcp"   : number
+  "dl_type"       : number
+  "nw_tos"        : number
+  "nw_proto"      : number
+  "nw_src"        : number
+  "nw_dst"        : number
+  "tp_src"        : number
+  "tp_dst"        : number
+
+The following are flow entry elements:
+  "cookie"        : string   NOT SURE IF WE'LL SUPPORT
+  "priority"      : number   NOT SURE IF WE'LL SUPPORT
+  "out_port"      : number
+
+If an entry is not specified, it is not checked in the match.
+
+For the Flow Table Entry GET response, an entry is returned for
+each match that is found in the table.  For each such response, 
+all parameters listed above for the request are returned except
+for out_port.  In addition, the following parameters are returned.
+
+  "duration_sec"  : number
+  "duration_nsec" : number
+  "idle_timeout"  : number
+  "hard_timeout"  : number
+  "packet_count"  : string
+  "byte_count"    : string
+  "action_list"   : object
+
+The action_list is a list of action objects.  All action objects
+have the following
+  "type"          : string
+
+Each action type has its own parameters:
+
+    "output"     => "port"        : number
+    "vlan_vid"   => "vlan_vid"    : number
+    "vlan_pcp"   => "vlan_pcp"    : number
+    "strip_vlan" => No parameters
+    "set_dl_src" => "dl_addr"     : string
+    "set_dl_dst" => "dl_addr"     : string
+    "set_nw_src" => "nw_addr"     : number
+    "set_nw_dst" => "nw_addr"     : number
+    "set_tp_src" => "tp_port"     : number
+    "set_tp_dst" => "tp_port"     : number
+    "enqueue"    => "port"        : number
+                    "queue_id"    : number
+
+4. Flow Table
+  Get:  GET cs/1.0/flowtable
+
+No parameters are accepted by GET requests.
+
+The parameter returned by a GET response is an array of entries each
+identical to that in Flow Table Entry above.  This is identical to 
+making a flow entry request with no parameters specified.
+
+5. Management Statistics
+  Get:  GET /cs/1.0/mgmtstats
+
+No parameters are accepted by GET requests.
+
+The parameters returned by a GET response are TBD
+
+6. Controller Connection Status
+  Get:  GET /cs/1.0/controllerstatus
+
+No parameters are accepted by GET requests.
+
+The parameter list returned by a GET response includes:
+  "ip addr" : string   # IP address of most recent controller connection
+  "port"    : number   # TCP port of most recent controller connection
+  TBD
+
+7. Logging level
+  Get:  GET /cs/1.0/loglevel
+  Set:  PUT /cs/1.0/loglevel
+
+The parameter list sent to PUT or returned by a GET response is:
+  "module" : string     # TBD, ignored for now
+  "level"  : string     # vverb, verbose, info, warning, error, critical, none
+
+8. Connection Failure Mechanism
+  Get:  GET /cs/1.0/failresponse
+  Set:  PUT /cs/1.0/failresponse
+
+The parameter passed to a PUT request and returned by a GET response is
+  "fail mechanism" : string
+where the string must be either "open" or "close"
+
+
+
+****************************************************************
+
+TO DO
+
+Unclear how free works for json objects; use 
+
+
+TASKS
+
+Get this working for dumping the full flow table first

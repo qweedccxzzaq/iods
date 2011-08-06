@@ -1,0 +1,114 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!-- Copyright 2011 Big Switch Networks -->
+
+<% 
+   require "web_common"
+   require "ui_cs_op"
+   require "ui_utils"
+%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <% print(common_includes) %>
+	<script type="text/javascript">
+	  $(document).ready(function(){
+        $('#flowtable_tab').dataTable({"bJQueryUI": true});
+        $('#flowtable_form').ajaxForm({target: '#flowtable_content'});
+	  });
+	</script>
+</head>
+
+<body>
+
+<div id="flowtable_content">
+<form name="input" action="/cgi-bin/flowtable" method="GET" id="flowtable_form">
+
+<input type="radio" name="displevel" value="extended"
+<% if FORM.displevel ~= "full" then print "CHECKED" end %> />Normal Display
+<br>
+<input type="radio" name="displevel" value="full" 
+<% if FORM.displevel == "full" then print "CHECKED" end %> />Detailed Display
+<br>
+<input type="submit" value="Refresh Table" />
+<br>
+</form> 
+
+
+<%
+   status, results, err_str = cs_flowtable_get()
+
+   if status ~= CS_REST_OKAY and err_str then
+      printf("<font color=red><b>Error %s retrieving flowtable: %s.\n",
+             tostring(status), tostring(err_str))
+      printf("</b></font>\n")
+   else
+      if results == nil or #results == 0 then
+         print("No flow table entries returned")
+      else
+         print("Note: TO=Time Out\n")
+         if FORM.displevel == "full" then
+            table_start('<table id="flowtable_tab">','<tr>'," |Entry|Entry|Entry")
+         else
+            table_start('<table id="flowtable_tab">', '<tr>',
+                        "Port|L2 Source|L2 Dest|VLAN|IP Source|IP Dest|"..
+                        "TCP Port|TCP Dest|Idle TO|Hard TO|Packets|Cookie")
+         end
+
+         for i, entry in ipairs(results) do
+            if FORM.displevel == "full" then  -- 3 entries per row
+               if ((i + 2) % 3) == 0 then
+                  print("<tr><td>"..tostring(i).."</td>")
+               end
+               print("<td><pre>")
+               print("Entry " .. tostring(i))
+               entry.nw_src = iptostring(entry.nw_src)
+               entry.nw_dst = iptostring(entry.nw_dst)
+               entry.nw_src_mask = iptostring(entry.nw_src_mask)
+               entry.nw_dst_mask = iptostring(entry.nw_dst_mask)
+               generic_show(entry)
+               print("</pre></td>")
+               if ((i % 3) == 0) then
+                  print("</tr>")
+               end
+            else
+               print("<tr>")
+               printf("<td>%s</td><td>%s</td><td>%s</td><td>%s</td>" ..
+                      "<td>%s</td><td>%s</td><td>%s</td><td>%s</td>" ..
+                      "<td>%s</td><td>%s</td><td>%s</td><td>%s</td>\n", 
+                      tostring(entry.in_port),
+                      entry.dl_src,
+                      entry.dl_dst,
+                      tostring(entry.dl_vlan),
+                      iptostring(entry.nw_src),
+                      iptostring(entry.nw_dst),
+                      tostring(entry.tp_src),
+                      tostring(entry.tp_dst),
+                      tostring(entry.idle_timeout),
+                      tostring(entry.hard_timeout),
+                      tostring(entry.packet_count),
+                      tostring(entry.cookie))
+               print("</tr>")
+            end
+         end
+         -- Clean up last row
+         if FORM.displevel == "full" then
+            i = #results
+            while (i % 3) ~= 0 do
+               print("<td> </td>")
+               i = i + 1
+            end
+            if i ~= #results then print("</tr>") end
+         end
+      end
+   end
+%>
+
+</tbody>
+</table>
+</div>
+</body>
+</html>

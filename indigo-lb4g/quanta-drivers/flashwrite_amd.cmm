@@ -1,0 +1,66 @@
+;Flash config script for the Freescale MPC8560ADS
+;evaluation board. REI 15.11.2004
+
+
+SYStem.RESet
+;if you get problems, try with lower frequencies
+SYStem.BdmClock 50.MHz
+SYStem.CPU 85XX
+SYStem.Option.SLOWRESET OFF
+SYStem.Option.FREEZE OFF
+SYStem.Up
+
+;Set CCSRBAR to 0x40000000
+Data.Set A:iobase() %long 0x0x00040000
+
+;configure MMU
+;Flash 0xff000000--0xffffffff
+MMU.TLB1.SET 0. 0xC0000700 0xFF000008 0xFF000015
+;L2SRAM for target based flash algorithm
+MMU.TLB1.SET 1. 0xC0000400 0x10000008 0x10000015
+
+;enable L2SRAM: 128k at 0x10000000
+Data.Set A:iobase()+0x00020000 %LONG 0x94010000
+Data.Set A:iobase()+0x00020100 %LONG 0x10000000
+;initialize L2SRAM
+Data.Set 0x10000000--0x1001FFFF %quad 0xAA55AA55AA55AA55
+
+;set up chip select for flash memory
+Data.Set A:iobase()+0x00005000 %LONG 0xFF801001
+Data.Set A:iobase()+0x00005004 %LONG 0xFF806E61
+
+;workaround for breakpoints
+Data.Set SPR:0x3F  %LONG 0x10000000
+Data.Set SPR:0x19F %LONG 0x00000000
+Data.ASSemble 0x10000000 NOP B 0x10000004
+
+;declare flash
+FLASH.RESet
+FLASH.Create 1. 0xFFF00000--0xFFFFFFFF 0x10000 am29lv256 word
+FLASH.TARGET 0x10001000 0x10002000 0x1000 am29lv256.bin
+
+
+;DIALOG.YESNO "Erase and program flash memory?"
+;ENTRY &progflash
+
+;IF !&progflash
+;  ENDDO
+
+FLASH.ERASE ALL
+
+FLASH.Program ALL
+print " Download u-boot.bin to flash memory !!"
+Data.Load u-boot.bin 0xFFF00000 /word
+
+FLASH.Program OFF
+
+print "~~~~~~~~~~  Download  END  ~~~~~~~~~~"
+SYS
+go
+
+ENDDO
+
+
+
+
+

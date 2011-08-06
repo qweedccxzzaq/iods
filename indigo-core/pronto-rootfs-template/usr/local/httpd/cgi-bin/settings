@@ -1,0 +1,130 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!-- Copyright 2011 Big Switch Networks -->
+
+<% 
+   require "web_common"
+   require "ui_cs_op"
+   require "ui_utils"
+   require "ui_config"
+%>
+
+<html>
+<head>
+    <% print(common_includes) %>
+	<script type="text/javascript">
+	  $(document).ready(function(){
+        $('#settings_form').ajaxForm({target: '#settings_content'});
+	  });
+	</script>
+</head>
+
+<body>
+<div id="settings_content">
+
+<%
+   function chk_var(var)
+      if var then print(tostring(var)) else print("not_set") end
+   end
+
+   -- TODO Validate text fields properly
+
+   -- Default values given here
+   local cfg = {
+      controller_ip = "10.0.0.2",
+      gateway = "10.0.0.1",
+      netmask = "255.0.0.0",
+      controller_port = 6633,
+      switch_ip = "10.0.0.100",
+      switch_mac = "00:00:00:00:00:01",
+      datapath_id = "123456abcdef",
+      fail_mode = "open",
+      system_ref = "10.0.0.100",
+      log_level = "error"
+   }
+
+   if ENV["REQUEST_METHOD"] == "POST" then
+      -- Populate config to save from form settings
+      rv, err_str = config_save(FORM)
+      if rv < 0 then
+         print("<font color=red><b>")
+         print("Error saving configuration: " .. err_str .. "</b></font>\n\n")
+      else
+         print("<font color=green><b>Configuration saved</b></font>")
+         print("<p><b>NOTE: Changes will take effect on restart</b>")
+      end
+   end
+
+   -- Refresh the system configuration into the cfg variable
+   rv, err_str = config_read(cfg)
+   if rv < 0 then
+      print("<font color=red><b>")
+      print("Error reading configuration: " .. err_str .. "</b></font>\n\n")
+   end
+
+%>
+
+<form name="input" action="/cgi-bin/settings" method="POST" id="settings_form">
+<table cellspacing="10">
+<tr><td>IP address for this switch:</td>
+<td>
+<input type="text" name="switch_ip" value=<% chk_var(cfg.switch_ip) %> />
+</td></tr>
+<tr><td>Netmask for this IP address:</td>
+<td>
+<input type="text" name="netmask" value=<% chk_var(cfg.netmask) %> />
+</td></tr>
+<tr><td>MAC address for this switch:</td>
+<td>
+<input type="text" name="switch_mac" value=<% chk_var(cfg.switch_mac) %> />
+</td></tr>
+<tr><td>Gateway IP address for this switch:</td>
+<td>
+<input type="text" name="gateway" value=<% chk_var(cfg.gateway) %> />
+</td></tr>
+<tr><td>OpenFlow Controller IP address: </td>
+  <td>
+<input type="text" name="controller_ip" value=<% chk_var(cfg.controller_ip) %> />
+</td></tr>
+<tr><td>OpenFlow Controller TCP port:</td>
+<td>
+<input type="text" name="controller_port" 
+       value=<% chk_var(cfg.controller_port) %> />
+</td></tr>
+<tr><td>Datapath ID of this switch: </td>
+<td>
+<input type="text" name="datapath_id" value=<% chk_var(cfg.datapath_id) %> />
+</td></tr>
+<tr><td>System Name:</td>
+<td>
+<input type="text" name="system_ref" value=<% chk_var(cfg.system_ref) %> />
+</td></tr>
+<tr><td>Fail open/close: </td>
+<td>
+<input type="radio" name="fail_mode" value="open" 
+<% get_chk_val(cfg.fail_mode, "open") %> />open <br />
+<input type="radio" name="fail_mode" value="closed"
+<% get_chk_val(cfg.fail_mode, "closed") %> />closed <br />
+</td></tr>
+<tr><td>
+Log level:
+</td><td>
+<select name="log_level" size="1" >
+<option name="none" <% get_chk_val(cfg.log_level, "none", "selected") %> >none</option>
+<option name="error" <% get_chk_val(cfg.log_level, "error", "selected") %> >error</option>
+<option name="warn" <% get_chk_val(cfg.log_level, "warn", "selected") %> >warn</option>
+<option name="info" <% get_chk_val(cfg.log_level, "info", "selected") %> >info</option>
+<option name="verbose" <% get_chk_val(cfg.log_level, "verbose", "selected") %> >verbose</option>
+<option name="verbose" <% get_chk_val(cfg.log_level, "vverb", "selected") %> >vverb</option>
+</select>
+</td></tr>
+<tr><td>
+<input type="submit" value="Save Configuration" /></td>
+<td>
+</tr>
+</table>
+</form>
+
+</body>
+</html>

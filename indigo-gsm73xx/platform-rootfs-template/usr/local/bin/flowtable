@@ -1,0 +1,60 @@
+#!/bin/lua
+-- Copyright 2011 Big Switch Networks
+--
+-- CLI command: port
+
+require "ui_cs_op"
+require "ui_utils"
+require "cli_common"
+require "optparse"
+
+local opt_desc={usage="Show flowtable entries",
+                version="1.0"}
+local op = OptionParser(opt_desc)
+op.add_option({"-f", "--full", action="store_true", dest="full", 
+               help="Show full entries"})
+local options, args = op.parse_args()
+
+status, results, err_str = cs_flowtable_get()
+
+if status ~= CS_REST_OKAY and err_str then
+   printf("Error %s retrieving flowtable: %s.\n",
+          tostring(status), tostring(err_str))
+else
+   if results == nil or #results == 0 then
+      print("No flow table entries returned")
+   else
+      print("Note: TO=Time Out\n")
+      if not options.full then
+         printf("%-4s %-18s %-18s %-5s %-16s %-16s %-5s %-5s "..
+                "%-4s %-4s %-9s %-6s\n", "Port", "L2 Source", "L2 Dest", 
+                "VLAN", "IP Source", "IP Dest", "TCP", "TCP", "Idle", 
+                "Hard", "Packets", "Cookie")
+         printf("%-4s %-18s %-18s %-5s %-16s %-16s %-5s %-5s "..
+                "%-4s %-4s %-9s %-6s\n", "", "", "", "", "", "",
+                "Src", "Dest", "TO", "TO", "", "")
+      end
+
+      for i, entry in ipairs(results) do
+         if options.full then
+            print("Entry " .. tostring(i))
+            generic_show(entry)
+         else
+            printf("%-4s %-18s %-18s %-5s %-16s %-16s %-5s %-5s "..
+                   "%-4s %-4s %-9s %-6s\n",
+                   tostring(entry.in_port),
+                   entry.dl_src,
+                   entry.dl_dst,
+                   tostring(entry.dl_vlan),
+                   iptostring(entry.nw_src),
+                   iptostring(entry.nw_dst),
+                   tostring(entry.tp_src),
+                   tostring(entry.tp_dst),
+                   tostring(entry.idle_timeout),
+                   tostring(entry.hard_timeout),
+                   tostring(entry.packet_count),
+                   tostring(entry.cookie))
+         end
+      end
+   end
+end

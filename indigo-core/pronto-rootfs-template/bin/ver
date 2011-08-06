@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# Show indigo version
+
+cat /etc/indigo-version

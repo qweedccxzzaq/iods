@@ -1,0 +1,32 @@
+#!/bin/sh
+
+PATH=/bin:/sbin
+
+if [ -e /etc/profile ] ; then
+port_num=$(cat /etc/profile | grep "PORT_NUM" | awk -F "=" '{printf $2}')
+mac_addr=$(cat /etc/profile | grep "MAC_ADDR" | awk -F "=" '{printf $2}')
+fi
+[ -z $port_num ] && port_num=1
+[ -z $mac_addr ] && mac_addr="00:11:88:2d:ab:cc"
+
+## insert modules
+if [ -e /drivers/dni_cpld_proc.ko ] ; then
+insmod /drivers/dni_cpld_proc.ko
+fi
+
+if [ -e /drivers/deth.ko   ] ; then
+insmod /drivers/deth.ko eth_num=$port_num mac_addr=$mac_addr
+fi
+
+if [ -e /drivers/bonding.ko ] ; then 
+insmod /drivers/bonding.ko miimon=1000
+fi
+
+if [ -e /drivers/llc.ko ] ; then
+insmod /drivers/llc.ko
+fi
+
+if [ -e /drivers/bridge.ko ] ; then
+insmod /drivers/bridge.ko
+fi
+

@@ -1,0 +1,51 @@
+-- Script to test CLI config commands
+config show
+config show dp_mgmt
+config delete dp_mgmt
+config set foo bar
+config delete foo
+config delete somevar
+config running
+config running dp_mgmt
+config set dp_mgmt no
+config set controller_ip 192.168.10.10
+config set controller_port 100
+config set ofp_options --max-backoff=12 abc def
+config set tap0_mac 00:01:02:03:04:05
+config set dp_mgmt y
+config set dp_mgmt yes
+config set dp_mgmt 1
+config set dp_mgmt n
+config set dp_mgmt no
+config set dp_mgmt 0
+config set dp_mgmt_oob yes
+config set dp_mgmt_oob no
+config set dp_mgmt_port 7
+config set dp_mgmt_vid 12
+config set dp_mgmt_vid -1
+config set system_ref indigo-sys
+config set hostname indigo-sys
+config set hostname 17-skidoo
+config set disable_sysconf n
+config set disable_sysconf y
+config set disable_telnet 1
+config set disable_telnet 0
+config set datapath_id 01
+config set datapath_id 0123456789
+config set datapath_id 000123456000
+config set datapath_id 1234567890abcdef
+config set fail_mode open
+config set fail_mode closed
+config set fail_mode static
+config set fail_mode host
+config set log_level verbose
+config set log_level vverb
+config set log_level info
+config set log_level warn
+config set log_level error
+config set disable_httpd yes
+config set disable_httpd no
+config set use_factory_mac no
+config set use_factory_mac yes
+-- Following should cause error
+-- config set controller_ip foo

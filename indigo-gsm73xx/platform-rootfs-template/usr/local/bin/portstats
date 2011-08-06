@@ -1,0 +1,101 @@
+#!/bin/lua
+-- Copyright 2011 Big Switch Networks
+--
+-- CLI command: portstats
+
+require "ui_cs_op"
+require "ui_utils"
+require "cli_common"
+require "optparse"
+
+local function table_start(hdr_string)
+   for i,v in ipairs(split(hdr_string, '|')) do
+      printf("%8s ", tostring(v))
+   end
+   printf("\n")
+end
+
+-- Set debug to non-nil to enable
+--local debug = 1
+local port_count = get_port_count()
+
+local opt_desc={usage=[[
+Show port statistics
+]],
+                version="1.0"}
+local op = OptionParser(opt_desc)
+op.add_option({"-l", "--link", action="store_true", dest="link", 
+               help="Only show ports with link"})
+op.add_option({"-n", "--narrow", action="store_true", dest="narrow", 
+               help="Try to fit in 80 columns"})
+
+local options, args = op.parse_args()
+
+if debug then 
+   generic_show(options)
+   generic_show(args)
+end
+
+local low_port = 1
+local high_port = port_count
+
+if args[1] then
+   local low, high = args[1]:match('^(%d+)-(%d+)')
+   if low then low_port = low end
+   if high then
+      high_port = high
+   else
+      low = args[1]:match('^(%d+)$')
+      if low then 
+         low_port = low
+         high_port = low
+      end
+   end
+end
+
+if options.narrow then
+   hdr_fmt = "%-4s %-8s %-8s %-8s %-8s %-8s %-8s %-8s %-8s\n"
+   num_fmt = "%-4d %-8d %-8d %-8d %-8d %-8d %-8d %-8d %-8d\n"
+else
+   hdr_fmt = "%-5s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s | %-12s\n"
+   num_fmt = "%-5d | %-12d | %-12d | %-12d | %-12d | %-12d | %-12d | %-12d | %-12d\n"
+end
+
+-- Check if any set parameters are given
+if port_count >= 0 then
+   print("Note: UC = Unicast; BC/MC = Broadcast/Multicast\n")
+   printf(hdr_fmt, " ", "TX", "TX UC", 
+          "TX BC/MC", "TX", "RX", "RX UC", "RX BC/MC", "RX")
+   printf(hdr_fmt, "Port", "Bytes", "Packets", "Packets", "Errors", 
+          "Bytes", "Packets", "Packets", "Errors")
+
+   for i=low_port, high_port do
+      link = 1
+      if options.link then
+         status,result,err_str = cs_port_get(i)
+         if status == CS_REST_OKAY then
+            link = tonumber(result[1].link) or 0
+         end
+      end
+      if link == 1 then
+         status,result,err_str = cs_portstats_get(i)
+         if status ~= CS_REST_OKAY then
+            print("Error getting information for port " .. i .. "\n")
+         else
+            local port_stats = result[1]
+            printf(num_fmt,
+                   i,
+                   port_stats["tx_bytes"],
+                   port_stats["tx_uc_pkts"],
+                   port_stats["tx_bcmc_pkts"],
+                   port_stats["tx_errors"],
+                   port_stats["rx_bytes"],
+                   port_stats["rx_uc_pkts"],
+                   port_stats["rx_bcmc_pkts"],
+                   port_stats["rx_errors"])
+         end
+      end
+   end
+else
+   print("No ports attached for this system")
+end

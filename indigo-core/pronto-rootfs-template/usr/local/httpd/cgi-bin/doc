@@ -1,0 +1,49 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!-- Copyright 2011 Big Switch Networks -->
+
+<% require "web_common" %>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <% print(common_includes) %>
+</head>
+
+<body>
+
+<p align='center'>
+<table cellpadding=20>
+<tr>
+<td align='left'>
+<a href="http://www.openflow.org"><img alt="OpenFlow Logo" src="/img/of.png" /></a>
+</td>
+<td align='right'>
+<a align='right' href="http://cleanslate.stanford.edu"><img alt="Clean Slate Program" 
+src="/img/cleanslate.png" /></a></p>
+</td>
+</tr>
+</table>
+<p>
+Indigo was developed by Dan Talayco, the 
+<a href="http://cleanslate.stanford.edu">Clean Slate Lab</a> at
+<a href="http://stanford.edu/">Stanford University</a> and
+<a href="http://bigswitch.com">Big Switch Networks</a>.</p>
+<p>
+It is based on the Stanford Reference OpenFlow Implemenation created by 
+many including:
+Martin Casado, David Erickson, Glen Gibb, Natasha Gude, Mikio Hara, Brandon Heller,
+Bobby Holley, Masayoshi Kobayashi, Bob Lantz, Brandon Nefcy, Justin Pettit,
+Ben Pfaff, Dan Talayco, Jean Tourrilhes, Rob Sherwood, Srini Seetharaman,
+David Underhill, Tatsuya Yabe, Yiannis Yiakoumis, Tatsuya Yabe, Jiang Zhu
+
+<p>
+For support, contact dtalayco@stanford.edu or visit the 
+<a href="http://www.openflowhub.org/display/Indigo">Indigo Home Page at OpenFlow Hub</a>
+<p align='center'>
+<a href="http://www.openflowhub.org/display/Indigo">
+<img alt="OpenFlow Hub" src="/img/ofhub.png" /></a></p>
+</body>
+</html>

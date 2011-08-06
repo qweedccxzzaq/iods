@@ -1,0 +1,139 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <title>GSM73xx OpenFlow Port Statistics</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+
+<body>
+
+<div id="header">
+
+<% 
+   require "web_common"
+   print(top_matter)
+%>
+
+    <div id="menu">
+
+        <ul id="main">
+            <li id="m-system"><a href="settings"><span>System</span></a></li>
+            <li id="m-monitoring" class="active"><a href="portstats"><span>Monitoring</span></a></li>
+            <li id="m-maintenance"><a href="upload"><span>Maintenance</span></a></li>
+            <li id="m-help"><a href="help"><span>Help</span></a></li>
+        </ul>
+
+        <ul id="sub">
+            <li class="active"><a href="portstats"><span>Port Statistics</span></a></li>
+            <li><a href="port"><span>Port Status</span></a></li>
+            <li><a href="flowtable"><span>Flow Table</span></a></li>
+            <li class="last"><a href="logs"><span>Logs</span></a></li>
+        </ul>
+
+    </div>
+
+</div>
+
+<div id="container">
+
+    <div id="sidebar">
+
+        <ul>
+            <li class="active"><a href="portstats">Port Statistics</a></li>
+        </ul>
+
+    </div>
+
+    <div id="content">
+
+<h2>Port Statistics</h2>
+
+<form name="input" action="portstats" method="GET">
+
+<p><input type="submit" value="Refresh Table" /> <input type="checkbox" name="withlink" value="withlink" <% get_chk_val(FORM.withlink, "withlink") %> /> <% if FORM.withlink == "withlink" then printf("<b>") end %> Show only ports with link <% if FORM.withlink == "withlink" then printf("</b>") end %></p>
+
+<div class="wide">
+<%
+   require "ui_cs_op"
+   require "ui_utils"
+   local port_count = get_port_count()
+   local link = 1
+   local disp_count = 0
+
+   print("Note: UC = Unicast; BC/MC = Broadcast/Multicast\n")
+   print("<br><b>Note: Port 1 is the Management Port and not " .. 
+         "OpenFlow controlled</b><br>")
+   if port_count >= 0 then
+      table_start([[
+                 <table class="tbl">
+                   <tr>
+                     <th colspan="9" class="heading">Port Statistics</th>
+                   </tr>
+         ]],'<tr>',
+                  "Port|TX Bytes|TX UC Packets|TX BC/MC Packets|TX Errors|"..
+                  "RX Bytes|RX UC Packets|RX BC/MC Packets|RX Errors")
+
+      for i=1,port_count do
+         if FORM.withlink then
+            status,result,err_str = cs_port_get(i)
+            link = 1
+            if status == CS_REST_OKAY then
+               link = tonumber(result[1].link) or 0
+            end
+         end
+         if link == 1 then
+            status,result,err_str = cs_portstats_get(i)
+            disp_count = disp_count + 1
+
+            start_row(disp_count)
+            if status ~= CS_REST_OKAY then
+               print("<td colspan='7'>Error getting information for port "
+                     .. i .. "</td></tr>\n")
+            else
+               local port_stats = result[1]
+               printf("<td>%d</td><td>%d</td><td>%d</td><td>%d</td>" ..
+                      "<td>%d</td><td>%d</td><td>%d</td><td>%d</td><td %s>%d</td>\n",
+                      i,
+                      port_stats["tx_bytes"],
+                      port_stats["tx_uc_pkts"],
+                      port_stats["tx_bcmc_pkts"],
+                      port_stats["tx_errors"],
+                      port_stats["rx_bytes"],
+                      port_stats["rx_uc_pkts"],
+                      port_stats["rx_bcmc_pkts"],
+                      last_col_elt,
+                      port_stats["rx_errors"])
+
+               print("</td></tr>")
+            end
+         end
+      end
+   end
+%>
+
+</table>
+</div>
+
+</form>
+
+    </div>
+
+<div class="clearer"></div>
+<div id="btm"></div>
+</div>
+
+<div id="footer">
+
+    <p id="copyright">Copyright &copy; 1996-2011 Netgear &reg;</p>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+#!/bin/sh
+# Default sysenv system configuration environment defines
+export start_telnet=1
+if test -z "$system_ref"; then
+   export system_ref unknown
+fi
+if test -z "$datapath_id"; then
+   export datapath_id=010203040506
+fi
+
+#
+# Template for core defines
+#
+# export switch_ip=192.168.2.99
+# export controller_ip=192.168.2.129
+# export controller_port=6633
+# export system_ref=tbd
+# export datapath_id=ba5eba11
+# export gateway=192.168.2.1
+# export netmask=255.255.255.0
+
+

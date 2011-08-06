@@ -1,0 +1,10 @@
+
+It is a part of dni-network L2/3 development board.
+cpu : 8533
+
+0x0000_0000 ~ 0x0fff_ffff	DDR		256M
+0xc000_0000 ~ 0xdfff_ffff	PCI1 MEM	512M
+0xfc00_0000 ~ 0xfdff_ffff	LBC		32M
+0xfe00_0000 ~ 0xffff_ffff	FLASH		32M
+	0xfff8_0000 ~ 0xffff_ffff	Bootloader	512K
+	0xfff4_0000 ~ 0xfff7_ffff	Bootloader_env	256K

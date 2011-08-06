@@ -1,0 +1,11 @@
+#!/bin/sh -e
+if [ -z "$1" ]; then 
+    echo "Usage: cmd <cmd-with-args>: Run CLI command from the command line";
+    echo "       cmd -f <filename>: Run CLI commands from a file";
+    exit 1
+fi
+if [ "$1" == "-f" ]; then
+    (cd /usr/local/switch_cli && lua cli.lua -f $2)
+else
+    (cd /usr/local/switch_cli && lua cli.lua -e "$*")
+fi

@@ -1,0 +1,258 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <title>GSM73xx System Configuration</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+</head>
+
+<body>
+
+<div id="header">
+
+<% 
+   require "web_common"
+   print(top_matter)
+%>
+
+    <div id="menu">
+
+        <ul id="main">
+            <li id="m-system" class="active"><a href="settings"><span>System</span></a></li>
+            <li id="m-monitoring"><a href="portstats"><span>Monitoring</span></a></li>
+            <li id="m-maintenance"><a href="upload"><span>Maintenance</span></a></li>
+            <li id="m-help"><a href="help"><span>Help</span></a></li>
+        </ul>
+
+        <ul id="sub">
+            <li class="active last"><a href="settings"><span>Status</span></a></li>
+        </ul>
+
+    </div>
+
+</div>
+
+<div id="container">
+
+    <div id="sidebar">
+
+        <ul>
+            <li class="active"><a href="settings">OpenFlow System Configuration</a></li>
+        </ul>
+
+    </div>
+
+    <div id="content">
+
+        <h2>OpenFlow System Configuration</h2>
+
+<form name="input" action="settings" method="POST">
+<%
+   require "ui_config"
+   function chk_var(var)
+      if var then print("'" .. tostring(var) .. "'") else print("''") end
+   end
+
+   function cfg_save_action(cfg)
+      if FORM.dp_mgmt_oob == "yes" then
+         -- TODO:  Support vid_fixed here
+         if FORM.dp_mgmt_port_fixed ~= "yes" then
+            return -1, "Misconfiguration: OOB requires fixed port"
+         end
+      end
+
+      for k,v in pairs(FORM) do
+         cfg[k] = v
+      end
+      -- FIXME: Need to deal with dhcp, netmask, ipaddr via /etc/ifcfg.tap0
+      nil_check = {"dp_mgmt_port", "switch_mac", "netmask", "gateway", 
+                   "controller_ip", "controller_port", "ofp_options", 
+                   "datapath_id", "system_ref", "hostname"}
+      for i,k in ipairs(nil_check) do
+         if not FORM[k] then cfg[k] = nil end
+      end
+
+      if type(FORM.dhcp_config) == "string" then
+         ifcfg_create("tap0", FORM)
+      end
+
+      return config_save(cfg)
+
+   end
+
+   -- TODO Validate text fields properly
+
+   -- Default values given here
+   -- Refresh the system configuration into the cfg variable
+   cfg = {}
+   rv, err_str = config_read(cfg)
+   if rv < 0 then
+      print("<font color=red><b>")
+      print("Error reading configuration: " .. err_str .. "</b></font>\n\n")
+   elseif ENV["REQUEST_METHOD"] == "POST" then
+      -- The following are for ifcfg settings
+      rv, err_str = cfg_save_action(cfg)
+      if rv < 0 then
+         print("<font color=red><b>")
+         print("Error saving configuration: " .. err_str .. "</b></font>\n\n")
+      else
+         print("<font color=green><b>Configuration saved</b></font>")
+         print("<p><b>NOTE: Changes will take effect on restart</b>")
+      end
+   end
+
+   rv, err_str = config_read(cfg)
+   if rv < 0 then
+      print("<font color=red><b>")
+      print("Error reading configuration: " .. err_str .. "</b></font>\n\n")
+   end
+
+%>
+
+<h3 class="narrow">OpenFlow System Configuration</h3>
+<div class="sm">
+<table class="dotted">
+
+<tr>
+    <td><strong>Switch MAC (running config):</strong></td>
+    <td><% print (get_switch_mac()) %> </td>
+</tr>
+<tr>
+    <td><strong>Override Preprogrammed MAC:</strong></td>
+    <td><input type="radio" name="use_factory_mac" value="yes" <% get_chk_val(cfg.use_factory_mac, "yes") %> />Use preprogrammed MAC<br />
+    <input type="radio" name="use_factory_mac" value="no" <% get_chk_val(cfg.use_factory_mac, "no") %> />Override preprogrammed MAC<br />
+    </td>
+</tr>
+<tr>
+    <td><strong>MAC address for override:</strong></td>
+    <td><input type="text" class="field-01" name="switch_mac" value=<% chk_var(cfg.switch_mac) %> /></td>
+</tr>
+<tr>
+    <td><strong>Switch IP address (running config):</strong></td>
+    <td><% print (get_switch_ip().."/"..get_switch_netmask()) %> </td>
+</tr>
+<tr>
+    <td><strong>Using DHCP for switch IP:</strong></td>
+    <td><input type="radio" name="dhcp_config" value="disable" <% get_chk_val(cfg.dhcp_config, "disable") %> />Disable DHCP<br />
+    <input type="radio" name="dhcp_config" value="enable" <% get_chk_val(cfg.dhcp_config, "enable") %> />Enable DHCP<br />
+    <input type="radio" name="dhcp_config" value="require" <% get_chk_val(cfg.dhcp_config, "require") %> />Only use DHCP<br />
+    </td>
+</tr>
+<tr>
+    <td><strong>Configured IP address for this switch:</strong></td>
+    <td><input type="text" class="field-01" name="switch_ip" value=<% chk_var(cfg.switch_ip) %> /></td>
+</tr>
+<tr>
+    <td><strong>Netmask for this IP address:</strong></td>
+    <td><input type="text" class="field-01" name="netmask" value=<% chk_var(cfg.netmask) %> /></td>
+</tr>
+<tr>
+    <td><strong>Configured Gateway IP address:</strong></td>
+    <td><input type="text" class="field-01" name="gateway" value=<% chk_var(cfg.gateway) %> /></td>
+</tr>
+<tr>
+    <td><strong>Current Gateway (running config):</strong></td>
+    <td><% print (get_switch_default_route()) %> </td>
+</tr>
+<tr>
+    <td><strong>OpenFlow Controller IP address:</strong></td>
+    <td><input type="text" class="field-01" name="controller_ip" value=<% chk_var(cfg.controller_ip) %> /></td>
+</tr>
+<tr>
+    <td><strong>OpenFlow Controller TCP port:</strong></td>
+    <td><input type="text" class="field-01" name="controller_port" value=<% chk_var(cfg.controller_port) %> /></td>
+</tr>
+<tr>
+    <td><strong>ofprotocol options (advanced):</strong></td>
+    <td><input type="text" class="field-01" name="ofp_options" value=<% chk_var(cfg.ofp_options) %> /></td>
+</tr>
+<tr>
+    <td><strong>Datapath ID of this switch:</strong></td>
+    <td><input type="text" class="field-01" name="datapath_id" value=<% chk_var(cfg.datapath_id) %> /></td>
+</tr>
+<tr>
+    <td><strong>System Ref:</strong></td>
+    <td><input type="text" class="field-01" name="system_ref" value=<% chk_var(cfg.system_ref) %> /></td>
+</tr>
+<tr>
+    <td><strong>Host Name:</strong></td>
+    <td><input type="text" class="field-01" name="hostname" value=<% chk_var(cfg.hostname) %> /></td>
+</tr>
+<tr>
+    <td><strong>Management Mode:<br>See notes following.</strong></td>
+    <td><input type="radio" name="dp_mgmt_oob" value="yes" <% get_chk_val(cfg.dp_mgmt_oob, "yes") %> />Out-of-band<br />
+    <input type="radio" name="dp_mgmt_oob" value="no" <% get_chk_val(cfg.dp_mgmt_oob, "no") %> />In-band<br />
+    </td>
+</tr>
+<tr>
+    <td><strong>Datapath Management Port:</strong></td>
+    <td><table border="0"><tr><td>
+    <input type="radio" name="dp_mgmt_port_fixed" value="yes" <% get_chk_val(cfg.dp_mgmt_port_fixed, "yes") %> />Fixed port<br />
+    <input type="radio" name="dp_mgmt_port_fixed" value="no" <% get_chk_val(cfg.dp_mgmt_port_fixed, "no") %> />Any port<br /></td>
+    <td>Port:&nbsp;</td>
+    <td><input type="text" size="5" class="field-02" name="dp_mgmt_port" value=<% chk_var(cfg.dp_mgmt_port) %> /></td></tr></table>
+</tr>
+<!--
+<tr>
+    <td><strong>Datapath Management VLAN Id:<br>Currently must specify VLAN<br></strong>VLAN -1 means untagged</td>
+    <td><table border="0"><tr><td><input type="radio" name="dp_mgmt_vid_fixed" value="yes" <% get_chk_val(cfg.dp_mgmt_vid_fixed, "yes") %> />Fixed VLAN<br />
+    <input type="radio" name="dp_mgmt_vid_fixed" value="no" <% get_chk_val(cfg.dp_mgmt_vid_fixed, "no") %> DISABLED />Any VLAN<br /></td>
+    <td><input type="text" size="5" class="field-02" name="dp_mgmt_vid" value=<% chk_var(cfg.dp_mgmt_vid) %> /></td><td>VID</td></tr></table>
+</tr>
+-->
+<tr>
+    <td><strong>Fail open/close:</strong></td>
+    <td><input type="radio" name="fail_mode" value="open" <% get_chk_val(cfg.fail_mode, "open") %> />open <br />
+    <input type="radio" name="fail_mode" value="closed" <% get_chk_val(cfg.fail_mode, "closed") %> />closed <br />
+    </td>
+</tr>
+<tr>
+    <td><strong>Log level:</strong></td>
+    <td><select name="log_level" size="1" class="field-01">
+    <option name="none" <% get_chk_val(cfg.log_level, "none", "selected") %> >none</option>
+    <option name="error" <% get_chk_val(cfg.log_level, "error", "selected") %> >error</option>
+    <option name="warn" <% get_chk_val(cfg.log_level, "warn", "selected") %> >warn</option>
+    <option name="info" <% get_chk_val(cfg.log_level, "info", "selected") %> >info</option>
+    <option name="verbose" <% get_chk_val(cfg.log_level, "verbose", "selected") %> >verbose</option>
+    <option name="verbose" <% get_chk_val(cfg.log_level, "vverb", "selected") %> >vverb</option>
+    </select></td>
+</tr>
+<tr>
+    <td colspan="2"><input type="submit" value="Save Configuration" /></td>
+</tr>
+</table>
+</form>
+</div>
+
+    </div>
+<!--
+<b>Notes on management mode:</b>
+<ul><li><b>Out-of-band:</b> traffic on the management port/VLAN terminates at the switch and is not forwarded to other ports.  No traffic on the port/VLAN is forwarded to the controller.  This is the default mode.
+<li><b>In-band:</b> traffic on the management port/VLAN is copied to the CPU and forwarded according to the current OpenFlow rules.
+</ul>
+In-band management may be more susceptible to misconfiguration (where 
+OpenFlow rules could cause a controller disconnection) and may impact
+performance.  In-band with no port or VLAN specified will copy all 
+broadcast/multicast traffic to the switch CPU and should only be used 
+for debugging networks with little traffic.
+-->
+
+<div class="clearer"></div>
+<div id="btm"></div>
+</div>
+
+<div id="footer">
+
+    <p id="copyright">Copyright &copy; 1996-2011 Netgear &reg;</p>
+
+</div>
+
+
+</body>
+</html>

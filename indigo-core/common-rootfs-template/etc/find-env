@@ -1,0 +1,125 @@
+#!/bin/sh
+# Shell script fragment to be sourced to pick up client environment 
+# variables. idempotent:  Source it as many times as you like.
+#
+# This should always live in /etc/find-env
+# EXECUTING THIS FILE SHOULD HAVE NO SIDE EFFECTS
+#
+# Defines the following
+#    client_root:  Default is /local
+#
+#    sys_init_file
+#    sys_config_file
+#    client_rc_soc
+#    client_config_bcm
+#
+# These are searched for in the following order: $config_dir; /etc
+#
+# The file sysenv is searched for in the same locations and sourced 
+# if found.  It should only contain export statements as it is parsed
+# by the UI libraries
+#
+
+if test -z "$verbose"; then
+    verbose=0
+fi
+
+vendor=pronto
+if `grep -q -i gsm73 /etc/indigo-version`; then
+    vendor=ntgr
+fi
+
+export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin
+
+# Need to get the global environment from process with PID 1
+# By default, Linux command line variables are no longer used as they
+# can override behavior configured in flash.  Set CMDLINE_VARS_OVERRIDE
+# on the command line to push those variables into the environment.
+
+if test -e /etc/platform.sh; then
+    source /etc/platform.sh
+else
+    export platform=unknown
+fi
+
+if test `grep CMDLINE_VARS_OVERRIDE /proc/1/environ`; then
+    for line in `(cat /proc/1/environ; echo) | tr "\000" "\n"`; do
+        export $line
+    done
+fi
+
+# Set client_root if not already defined
+if test -z "$client_root"; then
+    export client_root=/local
+fi
+
+# Set log directory
+if test -z "$log_dir"; then
+    export log_dir=/local/logs
+fi
+
+# Determine config_dir if not already defined
+if test -z "$config_dir"; then
+    if test -d /local/sfs; then
+        export config_dir=/local/sfs
+    else
+        export config_dir=/local
+    fi
+fi
+
+# Set system_init file
+sys_init_file=/etc/system_init #default
+if test -e $config_dir/system_init; then
+    sys_init_file=$config_dir/system_init
+fi
+
+# Set system_config file
+sys_config_file=/etc/system_config
+if test -e $config_dir/system_config; then
+    sys_config_file=$config_dir/system_config
+fi
+
+# Set rc.soc file
+export client_rc_soc=/etc/rc.soc
+if test -e $config_dir/rc.soc; then
+    export client_rc_soc=$config_dir/rc.soc
+fi
+
+# Set config.bcm file
+export client_config_bcm=/etc/config.bcm
+if test -e $ocnfig_dir/config.bcm; then
+    export client_config_bcm=$config_dir/config.bcm
+fi
+
+# Source for sysenv file
+if test -e $config_dir/sysenv; then
+    source $config_dir/sysenv
+elif test -e /etc/sysenv; then
+    source /etc/sysenv
+fi
+
+# For GSM73xxSO platforms, use fw_printenv to find tap0_mac
+if test -x /sbin/fw_printenv; then
+    if test "$use_factory_mac" != "no"; then
+        export tap0_mac=$(fw_printenv 2>/dev/null | grep "ethaddr" | \
+            awk -F "=" '{printf $2}')
+    fi
+fi
+
+if test "$PS1" == "# "; then
+    if test -n "$system_ref"; then
+        export PS1=$system_ref\#\ 
+    else
+        export PS1=`hostname `\#\ 
+    fi
+fi
+
+if test $verbose == 1; then
+    echo "find-env: system_ref $system_ref"
+    echo "find-env: cli root $client_root"
+    echo "find-env: sfs dir $sfs_dir"
+    echo "find-env: sys_init_file $sys_init_file"
+    echo "find-env: sys_config_file $sys_config_file"
+    echo "find-env: client_rc_soc $client_rc_soc"
+    echo "find-env: client_config_bcm $client_config_bcm"
+fi

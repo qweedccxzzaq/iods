@@ -1,0 +1,93 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!-- Copyright 2011 Big Switch Networks -->
+
+<% 
+   require "web_common"
+   require "ui_cs_op"
+   require "ui_utils"
+%>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en-US" xml:lang="en-US" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <% print(common_includes) %>
+	<script type="text/javascript">
+	  $(document).ready(function(){
+        $('#portstats_tab').dataTable({"bJQueryUI": true});
+        $('#portstats_form').ajaxForm({target: '#portstats_content'});
+	  });
+	</script>
+</head>
+
+<body>
+
+<div id="portstats_content">
+
+<form name="input" id='portstats_form' action="/cgi-bin/portstats" method="GET" id="portstats_form">
+<table cellpadding=20><tr><td>
+<input type="submit" value="Refresh Table" /></td>
+</td><td>
+<input type="checkbox" name="withlink" value="withlink"
+<% get_chk_val(FORM.withlink, "withlink") %> />
+
+<% if FORM.withlink == "withlink" then printf("<b>") end %>
+Show only ports with link
+<% if FORM.withlink == "withlink" then printf("</b>") end %>
+</td>
+</table>
+</form>
+
+<%
+   local port_count = get_port_count()
+   local link = 1
+
+   print("Note: UC = Unicast; BC/MC = Broadcast/Multicast\n")
+   if port_count >= 0 then
+      table_start('<table id="portstats_tab">', '<tr>',
+                  "Port|TX Bytes|TX UC Packets|TX BC/MC Packets|TX Errors|"..
+                  "RX Bytes|RX UC Packets|RX BC/MC Packets|RX Errors")
+
+      for i=1,port_count do
+         if FORM.withlink then
+            status,result,err_str = cs_port_get(i)
+            link = 1
+            if status == CS_REST_OKAY then
+               link = tonumber(result[1].link) or 0
+            end
+         end
+         if link == 1 then
+            status,result,err_str = cs_portstats_get(i)
+            if status ~= CS_REST_OKAY then
+               print("<tr><td colspan='7'>Error getting information for port "
+                     .. i .. "</td></tr>\n")
+            else
+               local port_stats = result[1]
+               print("<tr>")
+               printf("<td>%d</td><td>%d</td><td>%d</td><td>%d</td>" ..
+                      "<td>%d</td><td>%d</td><td>%d</td><td>%d</td><td>%d</td>\n",
+                      i,
+                      port_stats["tx_bytes"],
+                      port_stats["tx_uc_pkts"],
+                      port_stats["tx_bcmc_pkts"],
+                      port_stats["tx_errors"],
+                      port_stats["rx_bytes"],
+                      port_stats["rx_uc_pkts"],
+                      port_stats["rx_bcmc_pkts"],
+                      port_stats["rx_errors"])
+
+               print("</td></tr>")
+            end
+         end
+      end
+   end
+%>
+
+</tbody>
+</table>
+</div>
+</body>
+</html>
+

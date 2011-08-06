@@ -1,0 +1,92 @@
+#!/usr/local/bin/haserl --shell=lua
+Content-type: text/html
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    <title>GSM73xx Restart</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="../style.css" />
+
+<%
+   require("ui_utils")
+   if ENV["REQUEST_METHOD"] == "POST" then
+      print('<meta http-equiv="REFRESH" content="45;url=settings">')
+      pagecontent = [[
+<h2>Restarting OpenFlow processes</h2>
+]]
+      os.execute("sleep 1 && ofrestart &")
+   else
+      pagecontent = [[
+<h2>Are you sure you want to restart the OpenFlow processes?</h2>
+
+<p><form name="input" action="restart" method="POST"><input type="submit" value="RESTART PROCESSES" /></form></p>
+
+]]
+   end
+%>
+
+</head>
+
+<body>
+
+<div id="header">
+
+<% 
+   require "web_common"
+   print(top_matter)
+%>
+
+
+    <div id="menu">
+
+        <ul id="main">
+            <li id="m-system"><a href="settings"><span>System</span></a></li>
+            <li id="m-monitoring"><a href="portstats"><span>Monitoring</span></a></li>
+            <li id="m-maintenance" class="active"><a href="upload"><span>Maintenance</span></a></li>
+            <li id="m-help"><a href="help"><span>Help</span></a></li>
+        </ul>
+
+        <ul id="sub">
+            <li><a href="upload"><span>Upload</span></a></li>
+            <li><a href="reflash"><span>Reflash</span></a></li>
+            <li><a href="reboot"><span>Reboot</span></a></li>
+            <li class="active"><a href="restart"><span>Restart Processes</span></a></li>
+            <li class="last"><a href="integrity"><span>Integrity</span></a></li>
+        </ul>
+
+    </div>
+
+</div>
+
+<div id="container">
+
+    <div id="sidebar">
+
+        <ul>
+            <li class="active"><a href="restart">Restart</a></li>
+        </ul>
+
+    </div>
+
+    <div id="content">
+
+<% print(pagecontent) %>
+
+    </div>
+
+<div class="clearer"></div>
+<div id="btm"></div>
+</div>
+
+<div id="footer">
+
+    <p id="copyright">Copyright &copy; 1996-2011 Netgear &reg;</p>
+
+</div>
+
+</body>
+</html>

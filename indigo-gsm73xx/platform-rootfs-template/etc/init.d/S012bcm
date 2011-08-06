@@ -1,0 +1,14 @@
+#!/bin/sh
+
+PATH=/bin:/sbin
+
+[ -d /drivers ] || exit 0
+
+insmod /drivers/*proxy.ko
+insmod /drivers/*bde.ko dmasize=8M
+insmod /drivers/*diag-full.ko boot_flags=0x6000
+
+[ ! -e /dev/linux-uk-proxy ] && mknod /dev/linux-uk-proxy c 125 0
+
+[ -e /etc/bcm.rc ] && bcm.user.proxy -c "rcload /etc/bcm.rc"
+
