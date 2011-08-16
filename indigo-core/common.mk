@@ -68,7 +68,7 @@ VERSION_NAME:=Indigo build $(shell date +"%F %R")${target_suffix}
 endif
 
 ifdef IODS_BUILD
-VERSION_NAME:==${VERSION_NAME}-iods
+VERSION_NAME:=${VERSION_NAME}-iods
 endif
 
 VERSION_NAME:=$(shell echo "${VERSION_NAME}" | sed -e 's: :_:g')

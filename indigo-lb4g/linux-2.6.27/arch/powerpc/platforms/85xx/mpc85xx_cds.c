@@ -56,8 +56,10 @@
 #define CM_RST	(2)
 
 
+#ifdef USE_CADMUS
 static int cds_pci_slot = 2;
 static volatile u8 *cadmus;
+#endif
 
 #ifdef CONFIG_PCI
 
@@ -288,7 +290,7 @@ static void __init mpc85xx_cds_setup_arch(void)
 	if (ppc_md.progress)
 		ppc_md.progress("mpc85xx_cds_setup_arch()", 0);
 
-#if 0
+#ifdef USE_CADMUS
 	cadmus = ioremap(CADMUS_BASE, CADMUS_SIZE);
 	cds_pci_slot = ((cadmus[CM_CSR] >> 6) & 0x3) + 1;
 
@@ -327,7 +329,11 @@ static void mpc85xx_cds_show_cpuinfo(struct seq_file *m)
 	svid = mfspr(SPRN_SVR);
 
 	seq_printf(m, "Vendor\t\t: Freescale Semiconductor\n");
+#ifdef USE_CADMUS
 	seq_printf(m, "Machine\t\t: MPC85xx CDS (0x%x)\n", cadmus[CM_VER]);
+#else
+	seq_printf(m, "Machine\t\t: MPC85xx\n");
+#endif
 	seq_printf(m, "PVR\t\t: 0x%x\n", pvid);
 	seq_printf(m, "SVR\t\t: 0x%x\n", svid);
 
