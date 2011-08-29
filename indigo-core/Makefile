@@ -109,6 +109,14 @@ unmount-rfs:
 	(cd ${MOUNT_DIR} && sudo umount rfs)
 	@echo "Unmounted rootfs"
 
+nfs-image: mount-rfs
+	echo "export running_nfs=1" >> ${MOUNT_DIR}/rfs/etc/platform.sh
+	cd ${MOUNT_DIR}/rfs  && sudo tar czf ../nfs.tgz * && md5sum ../nfs.tgz && cd ..
+	(cd ${MOUNT_DIR} && sudo umount rfs)
+ifdef NFS_DIR
+	scp ${MOUNT_DIR}/nfs.tgz ${NFS_DIR}
+endif
+
 .PHONY: all gsm73xx lb9a lb4g lb8 help mount-rfs unmount-rfs iods-init \
 	iods-rel ui-install ui-test
 

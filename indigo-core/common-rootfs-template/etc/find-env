@@ -24,11 +24,6 @@ if test -z "$verbose"; then
     verbose=0
 fi
 
-vendor=pronto
-if `grep -q -i gsm73 /etc/indigo-version`; then
-    vendor=ntgr
-fi
-
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin
 
 # Need to get the global environment from process with PID 1
@@ -40,6 +35,7 @@ if test -e /etc/platform.sh; then
     source /etc/platform.sh
 else
     export platform=unknown
+    export vendor=unknown
 fi
 
 if test `grep CMDLINE_VARS_OVERRIDE /proc/1/environ`; then
@@ -106,12 +102,10 @@ if test -x /sbin/fw_printenv; then
     fi
 fi
 
-if test "$PS1" == "# "; then
-    if test -n "$system_ref"; then
-        export PS1=$system_ref\#\ 
-    else
-        export PS1=`hostname `\#\ 
-    fi
+if test -n "$system_ref"; then
+    export PS1=$system_ref\#\ 
+else
+    export PS1=`hostname `\#\ 
 fi
 
 if test $verbose == 1; then

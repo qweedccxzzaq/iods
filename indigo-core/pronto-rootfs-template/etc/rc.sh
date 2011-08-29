@@ -15,7 +15,7 @@
 # Client specific directory (for logs, etc) is $client_root
 # which is normally /client/$DEV_ADDR
 
-echo "Running rc.sh for platform:  Pronto 3290"
+echo "Running rc.sh"
 
 echo "Bringing up local devices"
 /sbin/ifconfig lo 127.0.0.1
@@ -30,22 +30,29 @@ mount -t devpts devpts /dev/pts
 mount -o remount,rw /
 
 source /etc/platform.sh
+echo "Platform: $platform. Vendor: $vendor"
 
-echo "Inserting core drivers for LB9A"
-insmod /lib/modules/cpuDrv.ko
-insmod /lib/modules/flashDrv.ko
-insmod /lib/modules/i2cDrv.ko
-insmod /lib/modules/pciDrv.ko
-# 3240 is special cased (in else below)
-if test -z "$p3240"; then
-    insmod /lib/modules/wdtDrv.ko
-    if test ! -d /cf_card; then
-        mkdir -p /cf_card
-    fi
-    mount /dev/hda1 /cf_card
+if test -n "$t2ref"; then
+    # Assumes T2 ref is using NFS for file system for now
+    mkdir -p /local
+    touch /local/sysenv
 else
-    echo "Attempting to extract SFS"
-    /sbin/sfs_extract /local
+    echo "Inserting core drivers for LB9A"
+    insmod /lib/modules/cpuDrv.ko
+    insmod /lib/modules/flashDrv.ko
+    insmod /lib/modules/i2cDrv.ko
+    insmod /lib/modules/pciDrv.ko
+    # 3240 is special cased (in else below)
+    if test -z "$p3240"; then
+        insmod /lib/modules/wdtDrv.ko
+        if test ! -d /cf_card; then
+            mkdir -p /cf_card
+        fi
+        mount /dev/hda1 /cf_card
+    else
+        echo "Attempting to extract SFS on 3240"
+        /sbin/sfs_extract /local
+    fi
 fi
 
 source /etc/find-env

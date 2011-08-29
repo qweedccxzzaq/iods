@@ -86,8 +86,6 @@ if $?dp_mgmt_oob "setenv dp_mgmt_arg '--dp-mgmt-oob'"
 if $?dp_mgmt_port "setenv dp_mgmt_arg '$dp_mgmt_arg --dp-mgmt-port=$dp_mgmt_port'"
 if $?dp_mgmt_vid "setenv dp_mgmt_arg '$dp_mgmt_arg --dp-mgmt-vid=$dp_mgmt_vid'"
 
-setenv desc_arg '--dp_desc="__INDIGO_REL_NAME__"'
-
 # Use DPID for datapath id if specified
 setenv dpid_arg ""
 if $?dpid "setenv dpid_arg '-d $dpid'"

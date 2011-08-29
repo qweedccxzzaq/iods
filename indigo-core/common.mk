@@ -239,8 +239,12 @@ ifdef IODS_BUILD
 OPENFLOW_TARGETS=secchan/ofprotocol utilities/dpctl
 endif
 
+# TODO: Fix for IODS; not ref'd there now.
+OF_IND_VER_FILE=${OF_SRC_DIR}/include/of_indigo_version.h
 # Openflow executable related
 openflow: target-rootfs-init ${OF_BLD_DIR}/Makefile cmdsrv
+	echo "#define INDIGO_REL_NAME \"${VERSION_NAME}\"" > ${OF_IND_VER_FILE}
+	echo "#define INDIGO_MFR_DESC \"Indigo OpenFlow from Big Switch Networks\"" >> ${OF_IND_VER_FILE}
 	make -C ${OF_BLD_DIR} ${OPENFLOW_TARGETS}
 	cp ${OF_BLD_DIR}/secchan/ofprotocol \
 		${OF_BLD_DIR}/secchan/ofprotocol.unstripped

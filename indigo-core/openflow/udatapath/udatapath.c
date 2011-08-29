@@ -60,6 +60,7 @@
 
 #if defined(OF_HW_PLAT)
 #include <of_hw_api.h>
+#include <of_indigo_version.h>
 #endif
 
 void udatapath_status(void);
@@ -80,20 +81,36 @@ int wd_fd = -1;
 
 /* Strings to describe the manufacturer, hardware, and software.  This data 
  * is queriable through the switch description stats message. */
-char mfr_desc[DESC_STR_LEN] = "Big Switch Networks";
+#if defined(OF_HW_PLAT)
+char mfr_desc[DESC_STR_LEN] = INDIGO_MFR_DESC;
+char sw_desc[DESC_STR_LEN] = INDIGO_REL_NAME;
+
 #if defined(QUANTA_LB9A)
 char hw_desc[DESC_STR_LEN] = "Pronto 3290";
+char dp_desc[DESC_STR_LEN] = "Indigo on Pronto 3290";
 #elif defined(QUANTA_LB8)
 char hw_desc[DESC_STR_LEN] = "Pronto 3780";
+char dp_desc[DESC_STR_LEN] = "Indigo on Pronto 3780";
 #elif defined(QUANTA_LB4G)
 char hw_desc[DESC_STR_LEN] = "Pronto 3240";
-#elif defined(OF_HW_PLAT)
-char hw_desc[DESC_STR_LEN] = "Unknown Indigo Platform";
+char dp_desc[DESC_STR_LEN] = "Indigo on Pronto 3240";
+#elif defined(GSM73XX)
+char hw_desc[DESC_STR_LEN] = "Netgear GSM73XX";
+char dp_desc[DESC_STR_LEN] = "Indigo on Netgear GSM73XX";
+#elif defined(BCM_TRIUMPH2_REF)
+char hw_desc[DESC_STR_LEN] = "Broadcom 56634 Reference Design";
+char dp_desc[DESC_STR_LEN] = "Indigo on BCM56634";
 #else
-char hw_desc[DESC_STR_LEN] = "Reference Userspace Switch";
+char hw_desc[DESC_STR_LEN] = "Unknown Indigo Platform";
+char dp_desc[DESC_STR_LEN] = "Indigo on unknown hardware";
 #endif
+
+#else /* Not OF_HW_PLAT */
+char mfr_desc[DESC_STR_LEN] = "Unknown";
 char sw_desc[DESC_STR_LEN] = VERSION BUILDNR;
 char dp_desc[DESC_STR_LEN] = "";
+char hw_desc[DESC_STR_LEN] = "Reference Userspace Switch";
+#endif /* OF_HW_PLAT */
 char serial_num[SERIAL_NUM_LEN] = "None";
 
 static void parse_options(int argc, char *argv[]);
