@@ -203,15 +203,15 @@ function flow_entry_header(verbosity)
       printf("Full dump of flow entries\n")
    elseif verbosity == 'extended' then
          printf("%-4s %-18s %-18s %-5s %-16s %-16s %-5s %-5s "..
-                "%-4s %-4s %-9s %-6s\n", "Port", "L2 Source", "L2 Dest", 
+                "%-4s %-4s %-9s %-6s %-6s\n", "Port", "L2 Source", "L2 Dest", 
                 "VLAN", "IP Source", "IP Dest", "TCP", "TCP", "Idle", 
-                "Hard", "Packets", "Cookie")
+                "Hard", "Packets", "Out_P", "Cookie")
          printf("%-4s %-18s %-18s %-5s %-16s %-16s %-5s %-5s "..
-                "%-4s %-4s %-9s %-6s\n", "", "", "", "", "", "",
-                "Src", "Dest", "TO", "TO", "", "")
+                "%-4s %-4s %-9s %-6s %-6s\n", "", "", "", "", "", "",
+                "Src", "Dest", "TO", "TO", "", "", "")
    else
-      printf("%4s %16s %16s %6s %6s %8s\n",
-             "port", "L3src", "L3dst", "L4src", "L4dst", "packets")
+      printf("%4s %16s %16s %6s %6s %6s %8s\n",
+             "port", "L3src", "L3dst", "L4src", "L4dst", "Out_P", "packets")
    end
 end
 
@@ -219,6 +219,16 @@ end
 -- verbosity is one of full, extended or brief
 function flow_entry_display (verbosity, i, entry)
    local str
+   local out_port="n/a"
+
+   -- Find an output action if present
+   if entry.actions then
+      for i,v in ipairs(entry.actions) do
+         if v.action_name == 'output' then
+            out_port=tostring(v.port)
+         end
+      end
+   end
 
    if verbosity == 'full' then
       printf("\nEntry %d\n", i)
@@ -233,7 +243,7 @@ function flow_entry_display (verbosity, i, entry)
       generic_show(entry)
    elseif verbosity == 'extended' then
       printf("%-4s %-18s %-18s %-5s %-16s %-16s %-5s %-5s "..
-             "%-4s %-4s %-9s %-6s\n",
+             "%-4s %-4s %-9s %-6s %-6s\n",
              tostring(entry.in_port),
              entry.dl_src,
              entry.dl_dst,
@@ -245,14 +255,16 @@ function flow_entry_display (verbosity, i, entry)
              tostring(entry.idle_timeout),
              tostring(entry.hard_timeout),
              tostring(entry.packet_count),
+             out_port,
              tostring(entry.cookie))
    else
-      printf("%4s %16s %16s %6s %6s %8s\n", 
+      printf("%4s %16s %16s %6s %6s %6s %8s\n", 
              tostring(entry.in_port),
              iptostring(entry.nw_src),
              iptostring(entry.nw_dst),
              tostring(entry.tp_src),
              tostring(entry.tp_dst),
+             out_port,
              tostring(entry.packet_count))
    end
 end

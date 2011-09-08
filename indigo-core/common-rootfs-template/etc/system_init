@@ -59,6 +59,11 @@ if test -e /etc/oob-network; then
     source /etc/oob-network
 fi
 
+# Start up fan daemon if present
+if test -x /sbin/fand; then
+    /sbin/fand > $log_dir/fand.log 2>&1 &
+fi
+
 # Start up telnet if so directed
 # To do: Direct to CLI or shell
 if test "$disable_telnetd" != "yes" ; then

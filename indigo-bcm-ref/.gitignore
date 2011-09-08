@@ -1,0 +1,12 @@
+*.cmd
+*.o
+*.ko
+busybox-1.4.2/.config
+busybox-1.4.2/.config.old
+busybox-1.4.2/_install/bin/busybox
+busybox-1.4.2/include/autoconf.h
+build-files
+build-images-*
+of-bld-*
+tmp-files/*
+*bcm.user*

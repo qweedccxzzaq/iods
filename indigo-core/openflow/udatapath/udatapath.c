@@ -270,6 +270,11 @@ udatapath_cmd(int argc, char *argv[])
     }
     dp_port_add_state_set(dp, port_add_state);
 
+    dp->dp_mgmt.enabled = dp_mgmt;
+    dp->dp_mgmt.port_fixed = dp_mgmt_port_fixed;
+    dp->dp_mgmt.port = dp_mgmt_port;
+    dp->dp_mgmt.vid_fixed = dp_mgmt_vid_fixed;
+    dp->dp_mgmt.vid = dp_mgmt_vid;
     if (dp_mgmt_oob) {
         if (!dp->dp_mgmt.vid_fixed && !dp->dp_mgmt.port_fixed) {
             printf("WARNING:  dp_mgmt misconfig: OOB requires fixed port\n");
@@ -281,11 +286,6 @@ udatapath_cmd(int argc, char *argv[])
         }
     }
     dp->dp_mgmt.oob = dp_mgmt_oob;
-    dp->dp_mgmt.enabled = dp_mgmt;
-    dp->dp_mgmt.port_fixed = dp_mgmt_port_fixed;
-    dp->dp_mgmt.port = dp_mgmt_port;
-    dp->dp_mgmt.vid_fixed = dp_mgmt_vid_fixed;
-    dp->dp_mgmt.vid = dp_mgmt_vid;
     dp_mgmt_set(dp);
 #endif
 

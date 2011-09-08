@@ -29,9 +29,9 @@ BUSYBOX_DIR=${PLATFORM_ROOT}/busybox-1.13.3
 
 # Fan daemon target
 fand: quanta-drivers
-	rm -f ${PLATFORM_ROOTFS}/sbin/fand
-	rm -f ${PLATFORM_ROOTFS}/sbin/setfan
-	cp ${PLATFORM_ROOT}/quanta-drivers/fand ${PLATFORM_ROOTFS}/sbin
-	cd ${PLATFORM_ROOTFS}/sbin && ln -s fand setfan && chmod +x fand setfan
+	rm -f ${PLATFORM_ROOTFS_TEMPLATE}/sbin/fand
+	rm -f ${PLATFORM_ROOTFS_TEMPLATE}/sbin/setfan
+	cp ${PLATFORM_ROOT}/quanta-drivers/fand ${PLATFORM_ROOTFS_TEMPLATE}/sbin
+	cd ${PLATFORM_ROOTFS_TEMPLATE}/sbin && ln -s fand setfan && chmod +x fand setfan
 
 .PHONY: fand

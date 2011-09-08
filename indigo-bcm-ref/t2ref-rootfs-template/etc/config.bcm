@@ -1,0 +1,12 @@
+# This is an empty config.bcm file for the Stanford-Boardcom
+# OpenFlow binary release.
+#
+# You may place your own version of this in an /sfs/ directory
+#
+# The OpenFlow related parameters follow:
+#
+# ofd_params:  The parameters to be passed to the ofdatapath command
+# ofd_params='--interfaces=<comma-separated-portlist> ptcp:'
+#
+# no_ofd:  If set, do not start OpenFlow daemon automatically
+#

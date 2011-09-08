@@ -9,6 +9,8 @@
 #include <unistd.h>
 #include <string.h>
 #include "i2cLib/i2cApi.h"
+#include <time.h>
+#include <sys/time.h>
 
 /* Comment or uncomment to set debug level */
 
@@ -29,6 +31,9 @@
 static int highest_max = -1;
 static int last_setting = -1;
 
+#define TIME_FMT "%d/%d %d:%02d:%02d UTC"
+#define TIME_VARS(tmt) (tmt).tm_mon + 1, (tmt).tm_mday, (tmt).tm_hour, \
+        (tmt).tm_min, (tmt).tm_sec
 /*
  * Set all fans to given percent value
  */
@@ -36,9 +41,14 @@ static void
 set_fans(int fan_setting)
 {
     int i;
+    struct tm tm_time;
+    time_t tm;
 
+    time(&tm);
+    memcpy(&tm_time, localtime(&tm), sizeof(tm_time));
+    DBG_INFO("fand " TIME_FMT ": Setting fans to %d percent.\n", 
+             TIME_VARS(tm_time), fan_setting);
     for (i = 1; i < 4; i++) {
-        DBG_INFO("fand: Fan %d to %d percent.\n", i, fan_setting);
         if (adt7470_set_fan(i, adt_7470_sensor_1, fan_setting) != 0) {
             DBG_WARN("fand: Cannot set Fan %d to %d\n", i, fan_setting);
         }
@@ -56,6 +66,11 @@ fan_speed_check(void)
     int i;
     unsigned int temp = 0;
     int fan_setting = 100;
+    struct tm tm_time;
+    time_t tm;
+
+    time(&tm);
+    memcpy(&tm_time, localtime(&tm), sizeof(tm_time));
 
     if (adt7470_data_refresh() != 0) {
         DBG_WARN("fand: ADT7470 Refresh FAIL\n");
@@ -65,7 +80,8 @@ fan_speed_check(void)
     /* From Quanta diag code; Get temperature */
     for (i = 1; i < 5; i++) {
         if (0 != adt7470_get_temp(i, adt_7470_sensor_1, &temp)) {
-            DBG_WARN("fand: Cannot get temp %d\n", i);
+            DBG_WARN("fand " TIME_FMT ": Cannot get temp %d\n", 
+                     TIME_VARS(tm_time), i);
             continue;
         }
         if (temp > max_temp) {
@@ -73,9 +89,9 @@ fan_speed_check(void)
         }
     }
 
-    DBG_VERBOSE("fand: temp: %d\n", max_temp);
     if (max_temp > highest_max) {
-        DBG_INFO("fand: New max temp: %d\n", max_temp);
+        DBG_INFO("fand " TIME_FMT ": New max temp: %d\n", 
+                 TIME_VARS(tm_time), max_temp);
         highest_max = max_temp;
     }
 
@@ -123,7 +139,6 @@ main(int argc, char **argv)
             usage();
             return 1;
         }
-        DBG_INFO("Setting fans to %d percent\n", percent);
         set_fans(percent);
         return 0;
     }

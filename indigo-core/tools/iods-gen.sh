@@ -56,7 +56,7 @@ if [ -z "$rel" ]; then
     exit 1
 fi
 if [ -z "$platforms" ]; then
-    platforms="indigo-gsm73xx indigo-lb9a indigo-lb8 indigo-lb4g"
+    platforms="indigo-gsm73xx indigo-lb9a indigo-lb8 indigo-lb4g indigo-bcm-ref"
 fi
 if [ -z "$topdir" ]; then
     topdir=`pwd`

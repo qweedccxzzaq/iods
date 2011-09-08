@@ -169,6 +169,8 @@ extern char serial_num;
 #define OFP_SUPPORTED_ACTIONS ( (1 << OFPAT_OUTPUT)         \
                                 | (1 << OFPAT_SET_VLAN_VID) \
                                 | (1 << OFPAT_SET_VLAN_PCP) \
+                                | (1 << OFPAT_SET_DL_SRC)   \
+                                | (1 << OFPAT_SET_DL_DST)   \
                                 | (1 << OFPAT_STRIP_VLAN)   \
                                 | (1 << OFPAT_ENQUEUE))
 #elif defined(STANFORD_LB8) /* 5684x, 48 x 10G */
@@ -186,6 +188,8 @@ extern char serial_num;
 #define OFP_SUPPORTED_ACTIONS ( (1 << OFPAT_OUTPUT)         \
                                 | (1 << OFPAT_SET_VLAN_VID) \
                                 | (1 << OFPAT_SET_VLAN_PCP) \
+                                | (1 << OFPAT_SET_DL_SRC)   \
+                                | (1 << OFPAT_SET_DL_DST)   \
                                 | (1 << OFPAT_STRIP_VLAN)   \
                                 | (1 << OFPAT_ENQUEUE))
 #elif defined(BCM_SCORPION_REF) /* 56820, 24 x 10G + 4 GE */

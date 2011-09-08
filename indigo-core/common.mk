@@ -23,7 +23,7 @@ export BCM_HW_PLAT = 1
 export OPENFLOW_BUILD = 1
 export OF_HW_PLAT=1
 
-CFG_CFLAGS := -DOF_HW_PLAT -DBCM_HW_PLAT
+CFG_CFLAGS := -DOF_HW_PLAT -DBCM_HW_PLAT ${CMDLINE_CFLAGS}
 
 # By default, include watchdog support
 ifndef NOWATCHDOG

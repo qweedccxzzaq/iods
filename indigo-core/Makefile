@@ -109,12 +109,13 @@ unmount-rfs:
 	(cd ${MOUNT_DIR} && sudo umount rfs)
 	@echo "Unmounted rootfs"
 
-nfs-image: mount-rfs
+# Given a mountable root FS, turn it into a tar file for NFS updating
+rfs-tgz: mount-rfs
 	echo "export running_nfs=1" >> ${MOUNT_DIR}/rfs/etc/platform.sh
-	cd ${MOUNT_DIR}/rfs  && sudo tar czf ../nfs.tgz * && md5sum ../nfs.tgz && cd ..
+	cd ${MOUNT_DIR}/rfs  && sudo tar czf ../rfs.tgz * && md5sum ../rfs.tgz && cd ..
 	(cd ${MOUNT_DIR} && sudo umount rfs)
 ifdef NFS_DIR
-	scp ${MOUNT_DIR}/nfs.tgz ${NFS_DIR}
+	scp ${MOUNT_DIR}/rfs.tgz ${NFS_DIR}
 endif
 
 .PHONY: all gsm73xx lb9a lb4g lb8 help mount-rfs unmount-rfs iods-init \

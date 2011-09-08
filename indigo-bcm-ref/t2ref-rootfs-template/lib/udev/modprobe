@@ -1,0 +1,11 @@
+#!/bin/sh
+if [ -n "$MODPROBE_COLLECT" ]; then
+	echo $@ >> /dev/MODPROBE
+else
+	if [ -n "$MODPROBE_DEBUG" ]; then
+		/sbin/modprobe -v -s $@ &>/dev/console
+	else
+		/sbin/modprobe $@
+	fi
+fi
+
