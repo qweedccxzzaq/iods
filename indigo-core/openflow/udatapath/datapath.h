@@ -64,8 +64,8 @@ struct sw_queue {
     uint16_t class_id; /* internal mapping from OF queue_id to tc class_id */
     struct sw_port *port; /* reference to the parent port */
     /* keep it simple for now, only one property (assuming min_rate) */
-    uint16_t property; /* one from OFPQT_ */
     uint16_t min_rate;
+    uint16_t max_rate;
 };
 
 #define MAX_HW_NAME_LEN 32

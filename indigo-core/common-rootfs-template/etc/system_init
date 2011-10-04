@@ -81,9 +81,9 @@ if test "$disable_sshd" != "yes" ; then
                 /etc/dropbear/dropbear_rsa_host_key.pub
         fi
     fi
-    if test -x /sbin/dropbear; then
+    if test -x /bin/dropbear; then
         echo "Starting SSH"
-        /sbin/dropbear
+        /bin/dropbear
     else
         echo "SSH dropbear not found"
     fi

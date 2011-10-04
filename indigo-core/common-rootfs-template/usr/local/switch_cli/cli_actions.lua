@@ -52,6 +52,7 @@ function debug_handler(command, line, parsed)
              dbg_lvl_strings[Global.debug_level], Global.debug_level)
    else
       dbg_lvl_set(get_debug_arg(parsed.level))
+      cs_loglevel_set(parsed.level)
    end
    return 0, ""
 end

@@ -11,6 +11,19 @@
 # $client_cfg/ (/config/$DEV_ADDR)
 # /config/default/
 # /etc/
+#
+# If SFS includes an nfs_path file, an NFS mount will be added, which is useful
+# for:
+# - defining a custom sysenv file outside of the main Indigo image
+# - storing logs to NFS when using a tftpboot'ed image
+#    (if log_dir is set in sysenv on the NFS mount)
+# The contents of nfs_path should be an IP and mount dir separated by a colon.
+#
+# Example setup, from a switch console:
+#   mkdir -p /sfs
+#   echo '192.168.1.11:/var/exports/shared' > /sfs/nfs_path
+#   cd sfs
+#   sfsctl create *
 
 # Client specific directory (for logs, etc) is $client_root
 # which is normally /client/$DEV_ADDR
@@ -52,6 +65,18 @@ else
     else
         echo "Attempting to extract SFS on 3240"
         /sbin/sfs_extract /local
+
+	# If nfs_path is a file in SFS, mount NFS dir.
+	sfs_dir=/local/sfs
+        if test -e "$sfs_dir/nfs_path"; then
+            export nfs_path=`cat $sfs_dir/nfs_path`
+            export nfs_dir=/mnt/nfs
+            echo "Mounting $nfs_path as $nfs_dir"
+            mkdir -p $nfs_dir
+            mount -t nfs -o nolock,rw $nfs_path $nfs_dir
+        else
+            echo "Not mounting NFS dir"
+        fi
     fi
 fi
 

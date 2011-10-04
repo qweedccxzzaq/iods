@@ -90,6 +90,15 @@ OFP_ASSERT(sizeof(struct openflow_ext_set_dp_desc) == 272);
 #define ofq_error_string(rv) (((rv) < OFQ_ERR_COUNT) && ((rv) >= 0) ? \
     openflow_queue_error_strings[rv] : "Unknown error code")
 
+#define OFPQ_RATE_UNCONFIGURED      0xffff
+/* Generic queue property with one uint16 */
+struct ofp_queue_prop_rate {
+    struct ofp_queue_prop_header prop_header; /* prop: OFPQT_MAX; len: 16 */
+    uint16_t rate;            /* in 1/10 of a percent of port BW */
+    uint8_t pad[6];           /* 64-bit alignment */
+};
+OFP_ASSERT(sizeof(struct ofp_queue_prop_rate) == 16);
+
 /****************************************************************
  *
  * Unsupported, but potential extended queue properties
@@ -116,15 +125,6 @@ extern char *openflow_queue_prop_strings[];
 
 #define ofq_prop_string(val) (((val) < OFPQT_EXT_COUNT) && ((val) >= 0) ? \
     openflow_queue_prop_strings[val] : "Unknown property value")
-
-/* These are all the same a min-rate queue property description */
-/* Max-Rate queue property description */
-struct ofp_queue_prop_max_rate {
-    struct ofp_queue_prop_header prop_header; /* prop: OFPQT_MIN, len: 16 */
-    uint16_t rate;            /* in 1/10 of a percent of port BW */
-    uint8_t pad[6];           /* 64-bit alignment */
-};
-OFP_ASSERT(sizeof(struct ofp_queue_prop_max_rate) == 16);
 
 /* Buffer alloc weight queue property description */
 struct ofp_queue_prop_buf_alloc {

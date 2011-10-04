@@ -44,3 +44,6 @@ function print_log_page_content(name, content)
    print(page_content)
 end
 
+-- Initialize log_dir
+log_dir = os.getenv('log_dir')
+

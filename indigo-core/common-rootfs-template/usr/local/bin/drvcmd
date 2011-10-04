@@ -33,10 +33,14 @@ if not str or str == '' then
 end
 
 local content = "did not run command"
-local log_dir = '/local/logs'
--- local log_dir = '/cf_card/local/logs'
+
+local log_dir = os.getenv('log_dir')
+if log_dir == nil then
+  log_dir = '/local/logs'
+end
 log_file = log_dir .. '/ofswd.log'
-pre = get_cmd_output("wc -c " .. log_file .. "|sed -e 's:[^[0-9]*::g'")
+
+pre = get_cmd_output("wc -c " .. log_file .. "|awk '{print $1}'")
 if str and str ~= "" then
    print("Running command: " .. str)
    local status, results, errstr = cs_drvcmd(0, str)
@@ -47,7 +51,7 @@ if str and str ~= "" then
       printf("Got reply %s\n", reply)
    end
    os.execute("sleep 1")
-   post = get_cmd_output("wc -c " .. log_file .. "|sed -e 's:[^[0-9]*::g'")
+   post = get_cmd_output("wc -c " .. log_file .. "|awk '{print $1}'")
    bytes = post - pre
    content = get_cmd_output("tail -c " .. bytes .. " " .. log_file)
 end

@@ -243,9 +243,10 @@ usage(void)
            "  del-flows SWITCH [FLOW]     delete matching FLOWs\n"
            "  monitor SWITCH              print packets received from SWITCH\n"
            "  execute SWITCH CMD [ARG...] execute CMD with ARGS on SWITCH\n"
-           "Queue Ops:  Q: queue-id; P: port-id; BW: perthousand bandwidth\n"
-           "  add-queue SWITCH P Q [BW]   add queue (with min bandwidth)\n"
-           "  mod-queue SWITCH P Q BW     modify queue min bandwidth\n"
+           "Queue Ops:  Q: queue-id; P: port-id; min/max: bandwidth in 0.1%% (1-1000)\n"
+           "  add-queue SWITCH P Q [min [max]]   add queue [min bw [max bw]]\n"
+           "  mod-queue SWITCH P Q [min [max]]   modify queue min/max bandwidth\n"
+           "     To disable bandwidth settings, use 0 for min and/or max\n"
            "  del-queue SWITCH P Q        delete queue\n"
            "  dump-queue SWITCH [P [Q]]   show queue info\n"
            "\nFor local datapaths, remote switches, and controllers:\n"
@@ -1548,8 +1549,11 @@ do_benchmark(const struct settings *s UNUSED, int argc UNUSED, char *argv[])
 
 static int
 parse_queue_params(int argc, char *argv[], uint16_t *port, uint32_t *q_id,
-                   uint16_t *min_rate)
+                   uint16_t *min_rate, uint16_t *max_rate)
 {
+    uint16_t min = OFPQ_RATE_UNCONFIGURED;
+    uint16_t max = OFPQ_RATE_UNCONFIGURED;
+
     if (!port || !q_id) {
         return -1;
     }
@@ -1562,16 +1566,31 @@ parse_queue_params(int argc, char *argv[], uint16_t *port, uint32_t *q_id,
     if (argc > 3) {
         *q_id = str_to_u32(argv[3]);
     }
-    if (min_rate) {
-        *min_rate = OFPQ_MIN_RATE_UNCFG;
-        if (argc > 4) {
-            *min_rate = str_to_u32(argv[4]);
+
+    if (argc > 4) {
+        min = str_to_u32(argv[4]);
+        if (min == 0 || min > 1000) { /* Normalize */
+                min = OFPQ_RATE_UNCONFIGURED;
         }
+    }
+    if (argc > 5) {
+        max = str_to_u32(argv[5]);
+        if (max == 0 || max > 1000) { /* Normalize */
+            max = OFPQ_RATE_UNCONFIGURED;
+        }
+    }
+
+    if (min_rate) {
+        *min_rate = min;
+    }
+    if (max_rate) {
+        *max_rate = max;
     }
 
     return 0;
 }
 
+/* FIXME: Assumes all props hae same struct size as min_rate */
 /* Length of queue request; works with 16-bit property values like min_rate */
 #define Q_REQ_LEN(prop_count) \
     (sizeof(struct ofp_packet_queue) + Q_PROP_LEN(prop_count))
@@ -1594,14 +1613,14 @@ parse_queue_params(int argc, char *argv[], uint16_t *port, uint32_t *q_id,
  */
 static struct openflow_queue_command_header *
 queue_req_create(int cmd, struct ofpbuf **b, uint16_t port,
-                 uint32_t q_id, uint16_t min_rate)
+                 uint32_t q_id, uint16_t min_rate, uint16_t max_rate)
 {
     struct openflow_queue_command_header *request;
     struct ofp_packet_queue *queue;
-    struct ofp_queue_prop_min_rate *min_rate_prop;
+    struct ofp_queue_prop_rate *rate_prop;
     int req_bytes;
 
-    req_bytes = sizeof(*request) + sizeof(*queue) + sizeof(*min_rate_prop);
+    req_bytes = sizeof(*request) + sizeof(*queue) + 2 * sizeof(*rate_prop);
     request = make_openflow(req_bytes, OFPT_VENDOR, b);
     if (request == NULL) {
         return NULL;
@@ -1610,15 +1629,20 @@ queue_req_create(int cmd, struct ofpbuf **b, uint16_t port,
     request->header.subtype = htonl(cmd);
     request->port = htons(port);
 
-    /* Will get complicated when queue properties w/ different struct sizes */
     queue = S_PTR(request, struct openflow_queue_command_header, body);
     queue->queue_id = htonl(q_id);
-    queue->len = htons(Q_REQ_LEN(1));
+    queue->len = htons(Q_REQ_LEN(2));
 
-    min_rate_prop = S_PTR(queue, struct ofp_packet_queue, properties);
-    min_rate_prop->prop_header.property = htons(OFPQT_MIN_RATE);
-    min_rate_prop->prop_header.len = htons(Q_PROP_LEN(1));
-    min_rate_prop->rate = htons(min_rate);
+    /* Always put two props, min and max */
+    rate_prop = S_PTR(queue, struct ofp_packet_queue, properties);
+    rate_prop->prop_header.property = htons(OFPQT_MIN_RATE);
+    rate_prop->prop_header.len = htons(sizeof(struct ofp_queue_prop_rate));
+    rate_prop->rate = htons(min_rate);
+
+    rate_prop += 1;
+    rate_prop->prop_header.property = htons(OFPQT_MAX_RATE);
+    rate_prop->prop_header.len = htons(sizeof(struct ofp_queue_prop_rate));
+    rate_prop->rate = htons(max_rate);
 
     return request;
 }
@@ -1633,21 +1657,21 @@ do_queue_op(int cmd, int argc, char *argv[])
     uint16_t port;
     uint32_t q_id;
     uint16_t min_rate;
+    uint16_t max_rate;
 
-    if (parse_queue_params(argc, argv, &port, &q_id, &min_rate) < 0) {
+    if (parse_queue_params(argc, argv, &port, &q_id, &min_rate, &max_rate) < 0) {
         ofp_fatal(0, "Error parsing port/queue for cmd %s", argv[0]);
         return;
     }
 
-    printf("que op %d (%s). port %d. q 0x%x. rate %d\n", cmd, argv[0],
-           port, q_id, min_rate);
+    printf("Debug:  Que op %s, %d. port %d. q 0x%x. min %d, max %d\n", argv[0],
+           cmd, port, q_id, min_rate, max_rate);
 
-    if ((request = queue_req_create(cmd, &b, port, q_id, min_rate)) == NULL) {
-        ofp_fatal(0, "Error creating queue req for cmd %s", argv[0]);
+    if ((request = queue_req_create(cmd, &b, port, q_id, min_rate, 
+                                    max_rate)) == NULL) {
+        ofp_fatal(0, "Error creating queue req for min: %s", argv[0]);
         return;
     }
-
-    printf("made request %p, running transaction\n", request);
 
     open_vconn(argv[1], &vconn);
     /* Unacknowledged call for now */
@@ -1716,7 +1740,7 @@ do_dump_queue(const struct settings *s UNUSED, int argc, char *argv[])
     uint32_t q_id;
 
     /* Get queue params from the request */
-    if (parse_queue_params(argc, argv, &port, &q_id, NULL) < 0) {
+    if (parse_queue_params(argc, argv, &port, &q_id, NULL, NULL) < 0) {
         ofp_fatal(0, "Error parsing port/queue for cmd %s", argv[0]);
         return;
     }
@@ -1761,8 +1785,8 @@ static struct command all_commands[] = {
     { "del-flows", 1, 2, do_del_flows },
     { "dump-ports", 1, 2, do_dump_ports },
     { "mod-port", 3, 3, do_mod_port },
-    { "add-queue", 3, 4, do_mod_queue },
-    { "mod-queue", 3, 4, do_mod_queue },
+    { "add-queue", 3, 5, do_mod_queue },
+    { "mod-queue", 3, 5, do_mod_queue },
     { "del-queue", 3, 3, do_del_queue },
     { "dump-queue", 1, 3, do_dump_queue },
     { "probe", 1, 1, do_probe },

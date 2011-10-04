@@ -246,7 +246,7 @@ struct of_hw_driver {
      * Port queue control.  Config will add the queue if not present
      */
     int (*port_queue_config)(of_hw_driver_t *hw_drv, int of_port,
-                             uint32_t qid, int min_bw);
+                             uint32_t qid, int min_bw, int max_bw);
     int (*port_queue_remove)(of_hw_driver_t *hw_drv, int of_port,
                              uint32_t qid);
 

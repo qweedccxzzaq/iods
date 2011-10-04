@@ -48,6 +48,7 @@
 #include "flow.h"
 #include "ofpbuf.h"
 #include "openflow/openflow.h"
+#include "openflow/openflow-ext.h"
 #include "openflow/nicira-ext.h"
 #include "packets.h"
 #include "pcap.h"
@@ -1338,19 +1339,44 @@ ofp_vendor(struct ds *string UNUSED, const void *oh, size_t len UNUSED, int verb
 static int
 show_queue_props(struct ds *string, const struct ofp_packet_queue *queue_desc)
 {
-    struct ofp_queue_prop_min_rate *min_rate_prop;
+    struct ofp_queue_prop_rate *rate_prop;
     int ent_len;
+    int bytes_left;
+    int prop, rate;
 
     ent_len = ntohs(queue_desc->len);
-    if (ent_len > sizeof(struct ofp_packet_queue)) {
-        /* Should switch on type of property and accumulate length fields */
-        min_rate_prop =
-            (struct ofp_queue_prop_min_rate *)(queue_desc->properties);
+    bytes_left = ent_len - sizeof(struct ofp_packet_queue);
+    rate_prop = (struct ofp_queue_prop_rate *)(queue_desc->properties);
+
+    while (bytes_left > 0) {
+        prop = ntohs(rate_prop->prop_header.property);
+        rate = ntohs(rate_prop->rate);
+
+        switch (prop) {
+        case OFPQT_MIN_RATE:
+            if (rate == OFPQ_MIN_RATE_UNCFG) {
+                ds_put_format(string, " Minimum Rate n/a.");
+            } else {
+                ds_put_format(string, " Minimum Rate %d.", rate);
+            }
+            break;
+        case OFPQT_MAX_RATE:
+            if (rate == OFPQ_MIN_RATE_UNCFG) {
+                ds_put_format(string, " Maximum Rate n/a.");
+            } else {
+                ds_put_format(string, " Maximum Rate %d.", rate);
+            }
+            break;
+        default:
+            ds_put_format(string, "\nError:  Unknown queue property %d.\n", prop);
+            break;
+        }
+
         /* Assert: len == 16 */
-        /* Assert: property == OFPQT_MIN_RATE */
-        ds_put_format(string, " Minimum Rate %d\n",
-                      ntohs(min_rate_prop->rate));
+        bytes_left -= sizeof(struct ofp_queue_prop_min_rate);
+        rate_prop += 1;
     }
+    ds_put_format(string, "\n");
 
     return ent_len;
 }

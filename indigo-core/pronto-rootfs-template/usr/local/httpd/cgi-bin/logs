@@ -45,7 +45,7 @@ Content-type: text/html
                ent.state .. ": " .. ent.ctrl_ip .. "\n"
          end
       else
-         local filename = log_dir .. "/" .. FORM.log .. ".log"
+         local filename = Platform.log_dir .. "/" .. FORM.log .. ".log"
          content = read_file(filename)
          if not content then
             content = "ERROR: Could not open " .. tostring(filename)

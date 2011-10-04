@@ -26,6 +26,11 @@ fi
 
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin
 
+if test -z "$DEV_ADDR"; then
+    export DEV_ADDR=`ifconfig | grep -A 2 eth0 | grep 'inet addr' \
+        | awk '{print $2}' | awk '{sub(/addr:/,"");print}'`
+fi
+
 # Need to get the global environment from process with PID 1
 # By default, Linux command line variables are no longer used as they
 # can override behavior configured in flash.  Set CMDLINE_VARS_OVERRIDE
@@ -47,11 +52,6 @@ fi
 # Set client_root if not already defined
 if test -z "$client_root"; then
     export client_root=/local
-fi
-
-# Set log directory
-if test -z "$log_dir"; then
-    export log_dir=/local/logs
 fi
 
 # Determine config_dir if not already defined
@@ -87,11 +87,21 @@ if test -e $ocnfig_dir/config.bcm; then
     export client_config_bcm=$config_dir/config.bcm
 fi
 
+# Set NFS mount if exists
+export nfs_dir=`mount | grep -i nfs | awk '{print $3}'`
+
 # Source for sysenv file
-if test -e $config_dir/sysenv; then
+if test -e $nfs_dir/sysenv; then
+    source $nfs_dir/sysenv
+elif test -e $config_dir/sysenv; then
     source $config_dir/sysenv
 elif test -e /etc/sysenv; then
     source /etc/sysenv
+fi
+
+# Set log directory
+if test -z "$log_dir"; then
+    export log_dir=/local/logs
 fi
 
 # For GSM73xxSO platforms, use fw_printenv to find tap0_mac

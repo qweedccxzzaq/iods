@@ -893,6 +893,7 @@ enum ofp_queue_properties {
     OFPQT_MIN_RATE,       /* Minimum datarate guaranteed. */
                           /* Other types should be added here
                            * (i.e. max rate, precedence, etc). */
+    OFPQT_MAX_RATE        /*Maximum datarate guaranteed. */
 };
 
 /* Common description for a queue. */

@@ -165,7 +165,6 @@ extern char serial_num;
 #define OFP_SUPPORTED_ACTIONS ( (1 << OFPAT_OUTPUT)         \
                                 | (1 << OFPAT_ENQUEUE))
 #elif defined(STANFORD_LB9A) /* 56534, 48 GE + 4 x 10G */
-/* FIXME:  DL_SRC and DL_DST set to be supported */
 #define OFP_SUPPORTED_ACTIONS ( (1 << OFPAT_OUTPUT)         \
                                 | (1 << OFPAT_SET_VLAN_VID) \
                                 | (1 << OFPAT_SET_VLAN_PCP) \
@@ -184,7 +183,6 @@ extern char serial_num;
 #define OFP_SUPPORTED_ACTIONS ( (1 << OFPAT_OUTPUT)         \
                                 | (1 << OFPAT_ENQUEUE))
 #elif defined(BCM_TRIUMPH2_REF) /* 56634, 48 GE + 4 x 10G */
-/* FIXME:  DL_SRC and DL_DST set to be supported */
 #define OFP_SUPPORTED_ACTIONS ( (1 << OFPAT_OUTPUT)         \
                                 | (1 << OFPAT_SET_VLAN_VID) \
                                 | (1 << OFPAT_SET_VLAN_PCP) \
@@ -1299,20 +1297,24 @@ static void
 fill_queue_desc(struct ofpbuf *buffer, struct sw_queue *q,
                 struct ofp_packet_queue *desc)
 {
-    struct ofp_queue_prop_min_rate *mr;
-    int len;
+    struct ofp_queue_prop_rate *prop;
+    uint16_t len;
 
-    len = sizeof(struct ofp_packet_queue) +
-        sizeof(struct ofp_queue_prop_min_rate);
-    desc->queue_id = htonl(q->queue_id);
+    len = sizeof(struct ofp_packet_queue) + 
+        2 * sizeof(struct ofp_queue_prop_rate);
     desc->len = htons(len);
+    desc->queue_id = htonl(q->queue_id);
+    
+    /* Property list: Always fill min/max entries */
+    prop = ofpbuf_put_zeros(buffer, sizeof *prop);
+    prop->prop_header.property = htons(OFPQT_MIN_RATE);
+    prop->prop_header.len = htons(sizeof(struct ofp_queue_prop_rate));
+    prop->rate = htons(q->min_rate);
 
-    /* Property list */
-    mr = ofpbuf_put_zeros(buffer, sizeof *mr);
-    mr->prop_header.property = htons(OFPQT_MIN_RATE);
-    len = sizeof(struct ofp_queue_prop_min_rate);
-    mr->prop_header.len = htons(len);
-    mr->rate = htons(q->min_rate);
+    prop = ofpbuf_put_zeros(buffer, sizeof *prop);
+    prop->prop_header.property = htons(OFPQT_MAX_RATE);
+    prop->prop_header.len = htons(sizeof(struct ofp_queue_prop_rate));
+    prop->rate = htons(q->max_rate);
 }
 
 
