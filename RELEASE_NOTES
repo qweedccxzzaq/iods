@@ -3,6 +3,11 @@ Release Notes
 Please see the web site http://www.openflowhub.org/display/Indigo for full 
 information.
 
+IODS Release 2011.11.08
+
+* Fixed a NULL pointer dereference in flow modify
+* Fixed SSH reference in initialization
+
 IODS Release 2011.10.03
 
 * Support for max-rate setting on queues
