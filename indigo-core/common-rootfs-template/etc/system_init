@@ -73,7 +73,7 @@ fi
 
 # Start up SSH if available
 if test "$disable_sshd" != "yes" ; then
-    if test -x /bin/dropbearkey; then
+    if test -n "`which dropbearkey`"; then
         if ! test -e /etc/dropbear/dropbear_rsa_host_key; then
             echo "Generating RSA key"
             mkdir -p /etc/dropbear
@@ -81,9 +81,9 @@ if test "$disable_sshd" != "yes" ; then
                 /etc/dropbear/dropbear_rsa_host_key.pub
         fi
     fi
-    if test -x /bin/dropbear; then
-        echo "Starting SSH"
-        /bin/dropbear
+    if test -n "`which dropbear`"; then
+        echo "Starting SSH: `which dropbear`"
+        dropbear
     else
         echo "SSH dropbear not found"
     fi

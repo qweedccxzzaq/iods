@@ -123,6 +123,11 @@ recv_of_exp_queue_delete(struct datapath *dp,
     }
 }
 
+#define NETDEV_MIN_RATE_CHECK(rate) \
+    (((rate) == 0) || (rate) > 1000 ? 1 : (rate))
+#define NETDEV_MAX_RATE_CHECK(rate) \
+    (((rate) == 0) || (rate) > 1000 ? 1000 : (rate))
+
 /** Modifies/adds a queue. It first searches if a queue with
  * id exists for this port. If yes it modifies it, otherwise adds
  * a new configuration.
@@ -199,7 +204,9 @@ recv_of_exp_queue_modify(struct datapath *dp,
         q = dp_lookup_queue(p, queue_id);
         if (q) {
             /* queue exists - modify it */
-            error = netdev_change_class(p->netdev,q->class_id, min_rate, max_rate);
+            error = netdev_change_class(p->netdev,q->class_id, 
+                                        NETDEV_MIN_RATE_CHECK(min_rate),
+                                        NETDEV_MAX_RATE_CHECK(max_rate));
             if (error) {
                 VLOG_ERR("Failed to update queue %d", queue_id);
                 dp_send_error_msg(dp, sender, OFPET_QUEUE_OP_FAILED,
@@ -221,7 +228,9 @@ recv_of_exp_queue_modify(struct datapath *dp,
                 return;
             }
             q = dp_lookup_queue(p, queue_id);
-            error = netdev_setup_class(p->netdev,q->class_id, min_rate, max_rate);
+            error = netdev_setup_class(p->netdev,q->class_id,
+                                       NETDEV_MIN_RATE_CHECK(min_rate),
+                                       NETDEV_MAX_RATE_CHECK(max_rate));
             if (error) {
                 VLOG_ERR("Failed to configure queue %d", queue_id);
                 dp_send_error_msg(dp, sender, OFPET_QUEUE_OP_FAILED,
