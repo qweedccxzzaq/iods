@@ -266,6 +266,12 @@ local command_table = {
       brief_help = "Evaluate a lua expression",
       handler = lua_handler
    },
+   restart = {
+      command = "restart",
+      help = "Restart the OpenFlow daemons",
+      brief_help = "Restart the OpenFlow daemons",
+      handler = restart_handler
+   },
 }
 
 

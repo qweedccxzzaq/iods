@@ -167,7 +167,7 @@ linux-kernel: linux-config
 else
 linux-kernel: linux-config
 	echo "Building Linux kernel"
-	make -C ${LINUX_ROOT}
+	make -C ${LINUX_ROOT} -j4
 endif
 
 # Target to ensure Linux dir is prepared for other builds that use it
@@ -269,11 +269,11 @@ openflow-clean:
 #
 ################################################################
 
-COMMON_PRODUCTS=cmdsrv
+COMMON_PRODUCTS=cmdsrv dropbear
 
 # FIXME:  Should update all binaries in platform template with each release
 ifndef QUICK_BUILD
-COMMON_PRODUCTS+=dropbear lua haserl
+COMMON_PRODUCTS+=lua haserl
 ifndef NO_BB_BLD
 COMMON_PRODUCTS+=busybox
 endif
@@ -328,9 +328,10 @@ ui-clean: cmdsrv-clean busybox-clean dropbear-clean
 	make -C ${HASERL_DIR} clean
 
 # This generates all the HTML pages
+HTML_VERSION=${VERSION_NAME}: ${BUILD_STRING}
 html-files: target-rootfs-init
 	(cd ${TARGET_ROOTFS}/usr/local/httpd && \
-		${CORE_DIR}/tools/html_gen.lua "${PLAT_NAME}" "${VERSION_NAME}")
+		${CORE_DIR}/tools/html_gen.lua "${PLAT_NAME}" "${HTML_VERSION}")
 
 
 ################################################################
@@ -357,9 +358,9 @@ cmdsrv-clean:
 #
 ################################################################
 
-rootfs-common: target-rootfs-init openflow common-products \
-		${BINARY_FILES_TARGET}
-	@echo "Root FS common pre-reqs complete"
+rootfs-common: target-rootfs-init openflow ${BINARY_FILES_TARGET} \
+		${COMMON_PRODUCTS}
+	@echo "Root FS common pre-reqs complete: ${COMMON_PRODUCTS}"
 
 
 ################################################################
@@ -377,6 +378,7 @@ export NFS_DIR = /var/exports/${BLD_EXT}${NFS_EXT}
 
 # Remote TFTP directory
 #TFTP_DIR=oberon:/var/tftpboot
+#TFTP_DIR=its1:/var/tftpboot
 
 ifdef TFTP_DIR
 tftp-rfs:
@@ -432,12 +434,13 @@ allvars: show
 	@echo "IODS_BUILD:         ${IODS_BUILD}"
 	@echo "IODS_BINARY_ONLY_FILES:   ${NON_IODS_BINARY_FILES}"
 	@echo "TFTP_DIR:           ${TFTP_DIR}"
+	@echo "COMMON_PRODUCTS:    ${COMMON_PRODUCTS}"
 	export
 
 .PHONY: all rootfs show all-vars busybox lua haserl dropbear dropbear-clean \
 	target-rootfs-init nfs cmdsrv cmdsrv-clean ${DRIVERS_CLEAN} \
 	of-bcm-libs openflow openflow-libs bcm-sdk uboot sfs clean bcm-clean \
-	copy-to-latest common-products openflow-clean tftp-rfs bde \
+	copy-to-latest openflow-clean tftp-rfs bde \
 	host-html html-files ui-clean ui dev linux-prep linux-config \
 	busybox-clean iods-platform rootfs-common
 

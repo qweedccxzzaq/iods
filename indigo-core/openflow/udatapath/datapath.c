@@ -170,6 +170,7 @@ extern char serial_num;
                                 | (1 << OFPAT_SET_VLAN_PCP) \
                                 | (1 << OFPAT_SET_DL_SRC)   \
                                 | (1 << OFPAT_SET_DL_DST)   \
+                                | (1 << OFPAT_SET_NW_TOS)   \
                                 | (1 << OFPAT_STRIP_VLAN)   \
                                 | (1 << OFPAT_ENQUEUE))
 #elif defined(STANFORD_LB8) /* 5684x, 48 x 10G */

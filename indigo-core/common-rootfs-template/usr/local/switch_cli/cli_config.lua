@@ -18,14 +18,14 @@ Examples:
     config delete dp_mgmt    : Delete dp_mgmt from saved config
 ]]
 
-config_subcmds = { "set", "show", "running", "delete", "help", "clean"}
+config_subcmds = { "set", "show", "running", "delete", "help", "clean" }
 
 config_parse_tab = {
    {
       key="subcommand", 
       parser=parse_string_list, 
       pargs=config_subcmds,
-      help="Subcommand: show, set, running, delete"
+      help="Subcommand: show, set, running, delete, clean"
    },
    {
       key="variable",

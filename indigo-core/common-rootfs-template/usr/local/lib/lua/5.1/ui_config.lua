@@ -183,6 +183,50 @@ function sfs_save()
    return 0
 end
 
+                                                                               
+-- Generate a datapath ID from string containing an IPv4 address
+-- Assuming the switch IP address is unique, this should give a unique dpid
+-- Returns a string with each octet right justified with zero padding
+-- Or nil if the conversion is not possible
+-- E.g. 192.168.2.119 -> 192168002119
+function ipv42dpid(str)
+   local octets, accum
+   octets = { string.find(str, "(%d+)%.(%d+)%.(%d+)%.(%d+)") }
+   if octets then
+      accum = ""
+      for i = 3,6 do
+         if octets[i] then
+            accum = accum .. string.format("%03d", octets[i])
+         end
+      end
+      return accum
+   else
+      return nil
+   end
+end
+
+
+-- remove trailing and leading whitespace from string.
+-- http://en.wikipedia.org/wiki/Trim_(8programming)
+function trim(s)
+  -- from PiL2 20.4
+  return (s:gsub("^%s*(.-)%s*$", "%1"))
+end
+
+
+-- the config var can be:
+--   not set at all
+--   set, but with value "" or "not_set"
+function config_var_is_set(v)
+  local vset = false
+  if v then
+    local vtrim = trim(tostring(v))
+    vset = (vtrim ~= "") and (vtrim ~= "not_set")
+  end
+  return vset
+end
+
+
 -- Save current configuration
 -- No sanitizing is done in this routine
 function config_save(config, verbose)
@@ -216,14 +260,23 @@ function config_save(config, verbose)
       return -1, err_string
    end
 
+   -- Create datapath_id if necessary
+   if not config_var_is_set(config["datapath_id"]) then
+      if config_var_is_set(config["switch_ip"]) then
+         config["datapath_id"] = ipv42dpid(config["switch_ip"])
+      end
+   end
+
    -- Sort the variables
    local keys = get_keys_as_sorted_list(config)
 
    file:write(top_stuff)
    for i, k in ipairs(keys) do
       v = config[k]
-      ui_dbg_verb("config: export %s=%s\n", k, tostring(v))
-      file:write("export "..k.."="..tostring(v).."\n")
+      if config_var_is_set(v) then
+         ui_dbg_verb("config: export %s=%s\n", k, tostring(v))
+         file:write("export "..k.."="..tostring(v).."\n")
+      end
    end
 
    if config.__ADDITIONAL_CONTENTS__ then

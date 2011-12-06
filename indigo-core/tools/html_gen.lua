@@ -120,6 +120,7 @@ tabs.monitoring = [[
 
 tabs.configuration = [[
               <li class="coreui-base-tablabel"><a href="/cgi-bin/settings">System Settings</a></li>
+              <li class="coreui-base-tablabel"><a href="/cgi-bin/ofd_settings">Daemon Settings</a></li>
 ]]
 
 tabs.documentation = [[

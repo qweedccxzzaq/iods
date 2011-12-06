@@ -15,13 +15,13 @@ Content-type: text/html
     <% print(common_includes) %>
 	<script type="text/javascript">
 	  $(document).ready(function(){
-        $('#settings_form').ajaxForm({target: '#settings_content'});
+        $('#ofd_settings_form').ajaxForm({target: '#ofd_settings_content'});
 	  });
 	</script>
 </head>
 
 <body>
-<div id="settings_content">
+<div id="ofd_settings_content">
 
 <%
    function chk_var(var)
@@ -40,7 +40,7 @@ Content-type: text/html
          print("Error saving configuration: " .. err_str .. "</b></font>\n\n")
       else
          print("<font color=green><b>Configuration saved.</b></font><br><br>")
-         print("<font color=red>Please <a href=\"/control.html#ui-tabs-2\">reboot the switch</a></font>.")
+         print("<font color=red>Please <a href=\"/control.html#ui-tabs-3\">restart daemons</a></font>.")
       end
    end
 
@@ -53,28 +53,31 @@ Content-type: text/html
 
 %>
 
-<form name="input" action="/cgi-bin/settings" method="POST" id="settings_form">
+<form name="input" action="/cgi-bin/ofd_settings" method="POST" id="ofd_settings_form">
 <table cellspacing="10">
-<input type="hidden" name="controller_ip" value=<% chk_var(cfg.controller_ip) %> />
-<input type="hidden" name="controller_port" 
+<input type="hidden" name="switch_ip" value=<% chk_var(cfg.switch_ip) %> />
+<input type="hidden" name="netmask" value=<% chk_var(cfg.netmask) %> />
+<input type="hidden" name="gateway" value=<% chk_var(cfg.gateway) %> />
+<input type="hidden" name="system_ref" value=<% chk_var(cfg.system_ref) %> />
+<tr><td>OpenFlow Controller IP address: </td>
+  <td>
+<input type="text" name="controller_ip" value=<% chk_var(cfg.controller_ip) %> />
+</td></tr>
+<tr><td>OpenFlow Controller TCP port:</td>
+<td>
+<input type="text" name="controller_port" 
        value=<% chk_var(cfg.controller_port) %> />
-<input type="hidden" name="datapath_id" value=<% chk_var(cfg.datapath_id) %> />
-<input type="hidden" name="fail_mode" value=<% chk_var(cfg.fail_mode) %> />
-<tr><td>IP address for this switch:</td>
-<td>
-<input type="text" name="switch_ip" value=<% chk_var(cfg.switch_ip) %> />
 </td></tr>
-<tr><td>Netmask for this IP address:</td>
+<tr><td>Datapath ID of this switch: </td>
 <td>
-<input type="text" name="netmask" value=<% chk_var(cfg.netmask) %> />
+<input type="text" name="datapath_id" value=<% chk_var(cfg.datapath_id) %> />
 </td></tr>
-<tr><td>Gateway IP address for this switch:</td>
+<tr><td>Fail open/close: </td>
 <td>
-<input type="text" name="gateway" value=<% chk_var(cfg.gateway) %> />
-</td></tr>
-<tr><td>System Name:</td>
-<td>
-<input type="text" name="system_ref" value=<% chk_var(cfg.system_ref) %> />
+<input type="radio" name="fail_mode" value="open" 
+<% get_chk_val(cfg.fail_mode, "open") %> />open <br />
+<input type="radio" name="fail_mode" value="closed"
+<% get_chk_val(cfg.fail_mode, "closed") %> />closed <br />
 </td></tr>
 <tr><td>
 Log level:

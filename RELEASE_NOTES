@@ -3,6 +3,18 @@ Release Notes
 Please see the web site http://www.openflowhub.org/display/Indigo for full 
 information.
 
+
+IODS Release 2011.12.05
+
+* Support for ToS matching
+* Preliminary support (unvalidated) for ToS/DSCP rewriting on the 
+  Pronto 3290
+* Fixed issues related to restarting OpenFlow daemons
+* Support for restarting OpenFlow daemons from web pages to pick 
+  up OpenFlow related configuration changes
+* Better treatment of defaults for some configuration parameters 
+  such as the DPID
+
 IODS Release 2011.11.08
 
 * Fixed a NULL pointer dereference in flow modify

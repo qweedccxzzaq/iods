@@ -24,7 +24,7 @@ Content-type: text/html
 
 <%
    if ENV["REQUEST_METHOD"] == "POST" then
-      rv = os.execute("ofrestart")
+      rv = os.execute("of-restart")
       if rv == 0 then
          pagecontent = "<h2>Restarted OpenFlow processes</h2>"
       else

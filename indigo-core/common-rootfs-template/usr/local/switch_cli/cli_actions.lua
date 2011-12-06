@@ -161,7 +161,6 @@ function lua_handler(command, line, parsed)
    return 0, ""
 end
 
-
 function report_rest_status(status, err_str)
    if status ~= CS_REST_OKAY then
       if not status then
@@ -179,3 +178,26 @@ function report_rest_status(status, err_str)
       end
    end
 end
+
+
+-- handle CLI invocation of of-restart
+function restart_handler()
+   local tmpfile
+   local rv
+
+   printf("restarting openflow daemons...\n")
+   tmpfile = os.tmpname()
+   if tmpfile then
+      rv = os.execute("/sbin/of-restart > " .. tmpfile)
+      if rv ~= 0 then
+         printf("error %d retarting\n", rv)
+      end
+      os.remove(tmpfile)
+   else
+      printf("cannot create temporary file; aborting\n")
+   end
+
+   return 0, ""
+end
+
+
